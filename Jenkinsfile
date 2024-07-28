@@ -29,6 +29,9 @@ pipeline {
                 git branch: '${BRANCH_NAME}',
                 credentialsId: 'github_ssh',
                 url: 'git@github.com:CineCare/CineHub-backend.git'
+                script {
+                    env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
+                }
             }
         }
 
