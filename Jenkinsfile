@@ -96,21 +96,21 @@ pipeline {
     }
 
     post {
-        always {
+        regression {
             sh "echo ${GIT_COMMIT_MSG}"
-            discordSend description: "Jenkins Pipeline Build Frontend ${BRANCH_NAME} failed ! ☹️\n\ngit commit message :\n${GIT_COMMIT_MSG}",
+            discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} failed ! ☹️\n\ngit commit message :\n${GIT_COMMIT_MSG}",
             footer: "Better luck next try ?",
             link: "$BUILD_URL",
             result: currentBuild.currentResult,
             title: JOB_NAME,
             webhookURL: "https://discord.com/api/webhooks/1208855718338363572/hPxGKwxnigUMvt0ZaPSsAiU1p8Udkdpg4Yo79UCIfo_lxm7Phbe-JLYdTV-22GFCXvYU"
         }
-        // fixed {
-        //     discordSend description: "Jenkins Pipeline Build Frontend ${BRANCH_NAME} succeed ! 😎\n\ngit commit message :\n${GIT_COMMIT_MSG}",
-        //     footer: "Good job !",
-        //     link: "$BUILD_URL",
-        //     result: currentBuild.currentResult,
-        //     title: JOB_NAME, webhookURL: "https://discord.com/api/webhooks/1208855718338363572/hPxGKwxnigUMvt0ZaPSsAiU1p8Udkdpg4Yo79UCIfo_lxm7Phbe-JLYdTV-22GFCXvYU"
-        // }
+        fixed {
+            discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} succeed ! 😎\n\ngit commit message :\n${GIT_COMMIT_MSG}",
+            footer: "Good job !",
+            link: "$BUILD_URL",
+            result: currentBuild.currentResult,
+            title: JOB_NAME, webhookURL: "https://discord.com/api/webhooks/1208855718338363572/hPxGKwxnigUMvt0ZaPSsAiU1p8Udkdpg4Yo79UCIfo_lxm7Phbe-JLYdTV-22GFCXvYU"
+        }
     }
 }
