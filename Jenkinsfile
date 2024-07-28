@@ -27,7 +27,7 @@ pipeline {
         stage('pull sources') {
             steps {
                 git branch: '${BRANCH_NAME}',
-                credentialsId: 'cinecare_backend',
+                credentialsId: 'github_ssh',
                 url: 'git@github.com:CineCare/CineHub-backend.git'
             }
         }
