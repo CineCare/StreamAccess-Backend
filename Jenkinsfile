@@ -28,9 +28,9 @@ pipeline {
             steps {
                 git branch: '${BRANCH_NAME}',
                 credentialsId: 'github_ssh',
-                url: 'git@github.com:CineCare/CineHub-backend.git'
+                url: 'git@github.com:CineCare/StreamAccess-Backend.git'
                 script {
-                    env.GIT_COMMIT_MSG = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+                    env.GIT_COMMIT_MSG = sh(script: 'git log -1 --pretty=%B' ${GIT_COMMIT}, returnStdout: true).trim()
                 }
             }
         }
@@ -47,9 +47,8 @@ pipeline {
         stage('build & push docker image') {
             steps {
                 sh '''
-                    docker build -t "streamaccess:backend" .
-                    docker login localhost:5000
-                    docker push streamaccess:backend
+                    docker build -t "localhost:5000/streamaccess:backend" .
+                    docker push localhost:5000/streamaccess:backend
                 '''
             }
         }
