@@ -48,8 +48,8 @@ pipeline {
             steps {
                 sh '''
                     docker build -t "streamaccess:backend" .
-
-                    docker push localhost:5000/streamaccess:backend
+                    docker login localhost:5000
+                    docker push streamaccess:backend
                 '''
             }
         }
