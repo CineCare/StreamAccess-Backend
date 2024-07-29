@@ -44,6 +44,16 @@ pipeline {
             }
         }
 
+        stage('build & push docker image') {
+            steps {
+                sh '''
+                    docker build -t "streamaccess:backend" .
+
+                    docker push localhost:5000/streamaccess:backend
+                '''
+            }
+        }
+
         // stage('lint') {
         //     steps {
         //         sh '''
