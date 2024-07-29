@@ -17,4 +17,4 @@ COPY . .
 # If you are building your code for production
 # RUN npm ci --omit=dev
 
-CMD [ "npm", "run", "test" ]
+CMD [ "npm", "run", "init" ]
