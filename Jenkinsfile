@@ -8,7 +8,7 @@ pipeline {
     options { buildDiscarder(logRotator(numToKeepStr: '5')) }
 
     environment {
-        DOCKER_CREDENTIALS = credentials('github_ssh')
+        DOCKER_CREDENTIALS = credentials('codevertDocker')
         DOCKER_TAG = "${env.BRANCH_NAME == 'main' ? 'latest' : env.BRANCH_NAME}"
         ENV_ID = "${env.BRANCH_NAME == 'main' ? 'backend_env' : "backend_env_" + env.BRANCH_NAME}"
     }
@@ -45,9 +45,13 @@ pipeline {
         }
 
         stage('build & push docker image') {
+            when {
+                expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
+            }
             steps {
                 sh '''
-                    docker build -t "localhost:5000/streamaccess:backend" .
+                    
+                    docker build -t "localhost:5000/streamaccess:backend_${env.BRANCH_NAME}" .
                     docker push localhost:5000/streamaccess:backend
                 '''
             }
@@ -100,22 +104,6 @@ pipeline {
         //         '''
         //     }
         // }
-
-        // stage('Update stack portainer') {
-        //     when {
-        //         expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
-        //     }
-        //     steps {
-        //         //stop and restart portainer stack via api
-        //         withCredentials([string(credentialsId: 'portainer_token', variable: 'TOKEN')]) { //set SECRET with the credential content
-        //             sh '''
-        //                 curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/4/stop?endpointId=2 &&
-        //                 curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/4/start?endpointId=2
-        //             '''
-        //         }
-        //     }
-        // }
-
         
     }
 
