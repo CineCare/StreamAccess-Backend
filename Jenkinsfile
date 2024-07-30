@@ -51,7 +51,7 @@ pipeline {
             steps {
                 sh '''
                     echo $DOCKER_CREDENTIALS_PSW | docker login localhost:5000 -u $DOCKER_CREDENTIALS_USR --password-stdin
-                    docker build -t "localhost:5000/streamaccess:backend_${env.BRANCH_NAME}" .
+                    docker build -t "localhost:5000/streamaccess:backend_${DOCKER_TAG}" .
                     docker push localhost:5000/streamaccess:backend
                 '''
             }
