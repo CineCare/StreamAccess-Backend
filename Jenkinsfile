@@ -108,7 +108,7 @@ pipeline {
     }
 
     post {
-        failed {
+        failure {
             sh 'echo ${GIT_COMMIT_MSG}'
             discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} failed ! ☹️\n\ngit commit message :\n${GIT_COMMIT_MSG}",
             footer: "Better luck next try ?",
