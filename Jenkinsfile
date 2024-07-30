@@ -50,7 +50,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
+                    echo $DOCKER_CREDENTIALS_PSW | docker login localhost:5000 -u $DOCKER_CREDENTIALS_USR --password-stdin
                     docker build -t "localhost:5000/streamaccess:backend_${env.BRANCH_NAME}" .
                     docker push localhost:5000/streamaccess:backend
                 '''
@@ -108,7 +108,7 @@ pipeline {
     }
 
     post {
-        failure {
+        regression {
             sh 'echo ${GIT_COMMIT_MSG}'
             discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} failed ! ☹️\n\ngit commit message :\n${GIT_COMMIT_MSG}",
             footer: "Better luck next try ?",
