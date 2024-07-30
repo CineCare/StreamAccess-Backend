@@ -52,7 +52,7 @@ pipeline {
                 sh '''
                     echo $DOCKER_CREDENTIALS_PSW | docker login localhost:5000 -u $DOCKER_CREDENTIALS_USR --password-stdin
                     docker build -t "localhost:5000/streamaccess:backend_${DOCKER_TAG}" .
-                    docker push localhost:5000/streamaccess:backend
+                    docker push localhost:5000/streamaccess:backend_${DOCKER_TAG}
                 '''
             }
         }
@@ -83,25 +83,6 @@ pipeline {
         //         always {
         //             recordIssues aggregatingResults: true, enabledForFailure: true, failOnError: true, ignoreQualityGate: false, skipPublishingChecks: true, sourceDirectories: [[path: 'src']], tools: [checkStyle(pattern: 'eslint.xml')]
         //         }
-        //     }
-        // }
-
-        // stage('build & push docker image') {
-        //     when {
-        //         expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
-        //     }
-        //     steps {
-        //         //copy .env file from jenkins credentials to current workspace
-        //         withCredentials([file(credentialsId: "${ENV_ID}", variable: 'envFile')]){
-        //             sh 'cp $envFile $WORKSPACE'
-        //         }
-        //         //connect to docker hub, build image and push to registry
-        //         sh '''
-        //             echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
-        //             docker build -t "whitedog44/cinehub:backend_${DOCKER_TAG}" .
-
-        //             docker push whitedog44/cinehub:backend_${DOCKER_TAG}
-        //         '''
         //     }
         // }
         
