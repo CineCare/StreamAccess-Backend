@@ -10,7 +10,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS = credentials('codevertDocker')
         DOCKER_TAG = "${env.BRANCH_NAME == 'main' ? 'latest' : env.BRANCH_NAME}"
-        ENV_ID = "${env.BRANCH_NAME == 'main' ? 'backend_env' : "backend_env_" + env.BRANCH_NAME}"
+        ENV_ID = "${env.BRANCH_NAME == 'main' ? 'streamaccess_backend_env' : "streamacces_backend_env_" + env.BRANCH_NAME}"
     }
     
     stages {
@@ -49,6 +49,11 @@ pipeline {
                 expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
             }
             steps {
+                //copy .env file from jenkins credentials to current workspace
+                withCredentials([file(credentialsId: "${ENV_ID}", variable: 'envFile')]){
+                    sh 'cp $envFile $WORKSPACE'
+                }
+                //connect to docker hub, build image and push to registry
                 sh '''
                     echo $DOCKER_CREDENTIALS_PSW | docker login localhost:5000 -u $DOCKER_CREDENTIALS_USR --password-stdin
                     docker build -t "localhost:5000/streamaccess:backend_${DOCKER_TAG}" .
