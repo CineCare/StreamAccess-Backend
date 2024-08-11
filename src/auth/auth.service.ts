@@ -35,7 +35,7 @@ export class AuthService {
     const hash = await bcrypt.hash(password, roundsOfHashing);
 
     const user = await this.prisma.user.create({
-      data: { pseudo, email, password: hash },
+      data: { pseudo, email, password: hash, isActive: false },
     });
     return {
       accessToken: this.jwtService.sign({ userId: user.id }),

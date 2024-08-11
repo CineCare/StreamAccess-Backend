@@ -18,6 +18,7 @@ model User {
   pseudo String
   email String @unique
   password String
+  isActive Boolean
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
