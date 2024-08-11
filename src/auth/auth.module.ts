@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { MailModule } from 'src/mail/mail.module';
 
 //TODO set in .env
 export const jwtSecret = 'super_secret_password';
@@ -19,6 +20,7 @@ export const jwtSecret = 'super_secret_password';
       signOptions: { expiresIn: '1d' },
     }),
     UsersModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

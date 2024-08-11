@@ -1,8 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthEntity } from './entities/auth.entity';
+import { MailService } from '../mail/mail.service';
 
 //TODO set in .env
 export const roundsOfHashing = 10;
@@ -12,6 +17,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async login(email: string, password: string): Promise<AuthEntity> {
@@ -33,10 +39,14 @@ export class AuthService {
     password: string,
   ): Promise<AuthEntity> {
     const hash = await bcrypt.hash(password, roundsOfHashing);
-
+    const existingUser = await this.prisma.user.findFirst({ where: { email } });
+    if (existingUser !== null) {
+      throw new BadRequestException('email ou mot de passe invalide');
+    }
     const user = await this.prisma.user.create({
       data: { pseudo, email, password: hash, isActive: false },
     });
+    await this.mailService.sendregistrationRequest(pseudo, email);
     return {
       accessToken: this.jwtService.sign({ userId: user.id }),
     };
