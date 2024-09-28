@@ -12,4 +12,3 @@ body:
       label: Étapes
       options:
         - label: option name
-          required: true
