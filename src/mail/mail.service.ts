@@ -5,16 +5,36 @@ import { Injectable } from '@nestjs/common';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendregistrationRequest(userName: string, email: string) {
-    const adminMail = 'werquin.lucas@wanadoo.fr';
-
+  async sendRegistrationRequest(userName: string, email: string) {
     await this.mailerService.sendMail({
-      to: adminMail,
+      to: process.env.ADMIN_EMAIL,
       subject: "Demande d'inscription StreamAccess",
       template: './registerRequest',
       context: {
         userName,
         email,
+      },
+    });
+  }
+
+  async sendAccountValidation(userName: string, email: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Validation de votre compte StreamAccess',
+      template: './accountValidation',
+      context: {
+        userName,
+      },
+    });
+  }
+
+  async sendAccountRejection(userName: string, email: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: "Votre demande d'inscription n'a pas été retenue",
+      template: './accountRejection',
+      context: {
+        userName,
       },
     });
   }

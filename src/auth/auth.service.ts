@@ -46,9 +46,21 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: { pseudo, email, password: hash, isActive: false },
     });
-    await this.mailService.sendregistrationRequest(pseudo, email);
+    await this.mailService.sendRegistrationRequest(pseudo, email);
     return {
       accessToken: this.jwtService.sign({ userId: user.id }),
     };
+  }
+
+  async validate(id: number): Promise<void> {
+    const user = await this.prisma.user.findFirstOrThrow({ where: { id } });
+    await this.prisma.user.update({ data: { isActive: true }, where: { id } });
+    await this.mailService.sendAccountValidation(user.pseudo, user.email);
+  }
+
+  async reject(id: number): Promise<void> {
+    const user = await this.prisma.user.findFirstOrThrow({ where: { id } });
+    await this.mailService.sendAccountRejection(user.pseudo, user.email);
+    await this.prisma.user.delete({ where: { id } });
   }
 }

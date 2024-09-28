@@ -1,0 +1,15 @@
+name: Feature
+description: Ajouter une nouvelle fonctionalité.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ###Description
+  - type: checkboxes
+    id: steps
+    attributes:
+      label: Étapes
+      options:
+        - label: 
+          required: true
