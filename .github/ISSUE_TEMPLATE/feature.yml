@@ -11,5 +11,5 @@ body:
     attributes:
       label: Étapes
       options:
-        - label: 
+        - label: option name
           required: true
