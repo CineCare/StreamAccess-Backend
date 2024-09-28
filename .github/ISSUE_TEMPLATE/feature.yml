@@ -4,7 +4,7 @@ labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
-      value: "### Description\n\n\n"
+      value: "## Description"
   - type: checkboxes
     id: steps
     attributes:
