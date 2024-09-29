@@ -2,12 +2,16 @@ name: Feature
 description: Ajouter une nouvelle fonctionalité.
 labels: ["enhancement"]
 body:
-  - type: markdown
+  - type: textarea
+    id: description
     attributes:
-      value: "## Description"
-  - type: checkboxes
+      label: Description
+      placeholder: Description complète de la fonctionnalité
+  - type: textarea
     id: steps
     attributes:
       label: Étapes
-      options:
-        - label: option name
+      value: |
+        - [] step name
+        - [] step name
+        ...
