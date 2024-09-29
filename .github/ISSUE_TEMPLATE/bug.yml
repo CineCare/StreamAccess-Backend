@@ -1,0 +1,23 @@
+name: Bug
+description: Signaler un disfonctionnement
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: Description complète du disfonctionnement
+  - type: textarea
+    id: reprosteps
+    attributes:
+      label: Étapes de production
+      value: |
+        - [ ] step name
+        - [ ] step name
+        ...
+      render: markdown
+  - type: textarea
+    id: fix
+    attributes:
+      label: Correction souhaitée
+      placeholder: Description du comportement attendu
