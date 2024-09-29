@@ -12,6 +12,6 @@ body:
     attributes:
       label: Étapes
       value: |
-        - [] step name
-        - [] step name
+        [] step name
+        [] step name
         ...
