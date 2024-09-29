@@ -1,6 +1,7 @@
 name: Feature
 description: Ajouter une nouvelle fonctionalité.
 labels: ["enhancement"]
+assignees: WhitedogWarren
 body:
   - type: textarea
     id: description

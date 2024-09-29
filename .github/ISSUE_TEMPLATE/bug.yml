@@ -1,6 +1,8 @@
 name: Bug
 description: Signaler un disfonctionnement
 labels: ["bug"]
+title: "[Bug] <title>"
+assignees: WhitedogWarren
 body:
   - type: textarea
     id: description
@@ -10,10 +12,10 @@ body:
   - type: textarea
     id: reprosteps
     attributes:
-      label: Étapes de production
+      label: Étapes de reproduction du bug
       value: |
-        - [ ] step name
-        - [ ] step name
+        - step name
+        - step name
         ...
       render: markdown
   - type: textarea
