@@ -16,7 +16,7 @@ export class UsersService {
   async getOne(id: number, additionnalFields?: object): Promise<UserEntity> {
     return await this.prisma.user.findUniqueOrThrow({
       where: { id },
-      select: { id: true, pseudo: true, ...additionnalFields },
+      select: { id: true, pseudo: true, isActive: true, ...additionnalFields },
     });
   }
 

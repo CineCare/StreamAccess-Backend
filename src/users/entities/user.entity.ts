@@ -9,4 +9,7 @@ export class UserEntity {
 
   @ApiProperty()
   email?: string;
+
+  @ApiProperty()
+  isActive: boolean;
 }

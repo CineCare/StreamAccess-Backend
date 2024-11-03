@@ -19,7 +19,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException();
     }
     // Message pour les users non validés
-    
+    if(user && !user.isActive) {
+      throw new UnauthorizedException("inactive");
+    }
     return user;
   }
 }
