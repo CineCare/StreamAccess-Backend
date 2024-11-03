@@ -18,6 +18,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (!user) {
       throw new UnauthorizedException();
     }
+    // Message pour les users non validés
+    
     return user;
   }
 }

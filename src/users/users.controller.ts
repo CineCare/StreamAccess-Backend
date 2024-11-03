@@ -20,6 +20,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   getMe(@Req() req) {
+    console.log(req.user.id);
     return this.usersService.getOne(req.user.id, { email: true, isActive: true });
   }
 
