@@ -1,11 +1,10 @@
-import { Controller, Body, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Body, Post, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entities/auth.entity';
 import { LoginDTO } from './DTO/login.dto';
 import { RegisterDTO } from './DTO/register.dto';
 import { AdminAuthGuard } from './guard/admin-auth.guard';
-import { castNumParam } from '../commons/utils/castNumParam';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -29,7 +28,14 @@ export class AuthController {
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   validate(@Query() query) {
-    return this.authService.validate(castNumParam('id', query.id));
+    let ids: number[];
+    try {
+      ids = JSON.parse(query.ids);
+    } catch {
+      throw new BadRequestException("invalid Id array");
+    }
+    return this.authService.validate(ids);
+    //return this.authService.validate(castNumParam('id', query.id));
   }
 
   @Post('reject')
@@ -37,6 +43,12 @@ export class AuthController {
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   reject(@Query() query) {
-    return this.authService.reject(castNumParam('id', query.id));
+    let ids: number[];
+    try {
+      ids = JSON.parse(query.ids);
+    } catch {
+      throw new BadRequestException("invalid Id array");
+    }
+    return this.authService.reject(ids);
   }
 }
