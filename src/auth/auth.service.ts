@@ -15,9 +15,9 @@ export const roundsOfHashing = 10;
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-    private mailService: MailService,
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async login(email: string, password: string): Promise<AuthEntity> {
