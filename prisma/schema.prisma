@@ -19,6 +19,29 @@ model User {
   email String @unique
   password String
   isActive Boolean
+  prefs Prefs[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Prefs {
+  id Int @id @default(autoincrement())
+  name String
+  userId Int
+  theme String?
+  images Boolean?
+  audioDescription Boolean?
+  subtitles Boolean?
+  highContrast Boolean?
+  playRateControl Boolean?
+  contentSummary Boolean?
+  simplifiedExplanation Boolean?
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Movie {
+  id Int @id @default(autoincrement())
+  title String
+  realeaseYear Int
+  image String?
 }
