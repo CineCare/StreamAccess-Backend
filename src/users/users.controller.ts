@@ -32,6 +32,14 @@ export class UsersController {
     return this.usersService.getOne(req.user.id, { email: true, isActive: true });
   }
 
+  @Get('candidates')
+  @ApiOkResponse({ type: Array<CandidateEntity>})
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  getCandidates() {
+    return this.usersService.getCandidates();
+  }
+
   @ApiOkResponse({ type: UserEntity })
   @ApiBadRequestResponse({ type: BadRequestException })
   @Put('me')
@@ -58,11 +66,4 @@ export class UsersController {
     }
   }
 
-  @Get('candidates')
-  @ApiOkResponse({ type: Array<CandidateEntity>})
-  @ApiBearerAuth()
-  @UseGuards(AdminAuthGuard)
-  getCandidates() {
-    return this.usersService.getCandidates();
-  }
 }

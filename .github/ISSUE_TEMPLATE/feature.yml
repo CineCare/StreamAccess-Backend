@@ -16,4 +16,3 @@ body:
         - [ ] step name
         - [ ] step name
         ...
-      render: markdown
