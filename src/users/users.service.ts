@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDTO } from './DTO/userUpdate.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserEntity } from './entities/updateUser.entity';
 
 //TODO set in .env
 export const roundsOfHashing = 10;
@@ -33,7 +34,7 @@ export class UsersService {
   }
 
   async updateMe(id: number, data: UpdateUserDTO): Promise<UserEntity> {
-    const newData = {};
+    let newData: UpdateUserEntity = {};
     if (data.actualPassword) {
       const crypt = await bcrypt.hash(data.actualPassword, roundsOfHashing);
       const storedCrypt = (
@@ -55,11 +56,12 @@ export class UsersService {
           'Le nouveau mot de passe et la confirmation sont différents',
         );
       }
-      Object.defineProperty(newData, 'password', { value: crypt });
+      newData.password = await bcrypt.hash(data.newPassword, roundsOfHashing);
     }
     if (data.pseudo) {
-      Object.defineProperty(newData, 'pseudo', { value: data.pseudo });
+      newData.pseudo = data.pseudo;
     }
+    console.log("New data :\n", newData);
     const newUser = await this.prisma.user.update({
       where: { id },
       data: newData,

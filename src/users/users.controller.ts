@@ -41,6 +41,7 @@ export class UsersController {
     @Request() req,
     @Body() body: UpdateUserDTO,
   ): Promise<UserEntity> {
+    console.log(body);
     return await this.usersService.updateMe(req.user.id, body);
   }
 
