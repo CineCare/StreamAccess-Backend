@@ -61,7 +61,6 @@ export class UsersService {
     if (data.pseudo) {
       newData.pseudo = data.pseudo;
     }
-    console.log("New data :\n", newData);
     const newUser = await this.prisma.user.update({
       where: { id },
       data: newData,
