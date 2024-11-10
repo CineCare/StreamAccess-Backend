@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserEntity {
+export class CandidateEntity {
   @ApiProperty()
   id: number;
 
@@ -9,7 +9,4 @@ export class UserEntity {
 
   @ApiProperty()
   email?: string;
-
-  @ApiProperty()
-  isActive?: boolean;
 }
