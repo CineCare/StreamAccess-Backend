@@ -3,9 +3,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { NotFoundError } from 'rxjs';
 
 export function handleErrorResponse(e, paramName: string, paramValue: string) {
-  if (e.code === 'P2025') {
+  if (e instanceof NotFoundError || e.code === 'P2025') {
     throw new NotFoundException(`${paramName} ${paramValue}`);
   }
   if (e instanceof BadRequestException) {
