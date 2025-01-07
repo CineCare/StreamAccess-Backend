@@ -11,6 +11,7 @@ pipeline {
         DOCKER_CREDENTIALS = credentials('codevertDocker')
         DOCKER_TAG = "${env.BRANCH_NAME == 'main' ? 'latest' : env.BRANCH_NAME}"
         ENV_ID = "${env.BRANCH_NAME == 'main' ? 'streamaccess_backend_env' : "streamacces_backend_env_" + env.BRANCH_NAME}"
+        DISCORD_WEBHOOK = credentials('discord-webhook')
     }
     
     stages {
@@ -101,14 +102,15 @@ pipeline {
             link: "$BUILD_URL",
             result: currentBuild.currentResult,
             title: JOB_NAME,
-            webhookURL: "https://discord.com/api/webhooks/1208855718338363572/hPxGKwxnigUMvt0ZaPSsAiU1p8Udkdpg4Yo79UCIfo_lxm7Phbe-JLYdTV-22GFCXvYU"
+            webhookURL: "${DISCORD_WEBHOOK}"
         }
         fixed {
             discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} succeed ! 😎\n\ngit commit message :\n${GIT_COMMIT_MSG}",
             footer: "Good job !",
             link: "$BUILD_URL",
             result: currentBuild.currentResult,
-            title: JOB_NAME, webhookURL: "https://discord.com/api/webhooks/1208855718338363572/hPxGKwxnigUMvt0ZaPSsAiU1p8Udkdpg4Yo79UCIfo_lxm7Phbe-JLYdTV-22GFCXvYU"
+            title: JOB_NAME,
+            webhookURL: "${DISCORD_WEBHOOK}"
         }
     }
 }
