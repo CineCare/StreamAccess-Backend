@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { castNumParam } from 'src/commons/utils/castNumParam';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
@@ -6,6 +6,9 @@ import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateMovieDTO } from './DTO/movieCreate.dto';
 import { MoviesService } from './movies.service';
 import { UpdateMovieDTO } from './DTO/movieUpdate.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName } from '../commons/utils/fileUpload';
 
 @Controller('movies')
 @ApiTags('movies')
@@ -32,7 +35,13 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  create(@Body() body: CreateMovieDTO) {
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './assets/movies_images',
+      filename: editFileName
+    })
+  }))
+  create(@Body() body: CreateMovieDTO, @UploadedFile() file) {
     return this.moviesService.create(body);
   }
   
@@ -40,7 +49,15 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  update(@Param('id') id: string, @Body() body: UpdateMovieDTO) {
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './assets/movies_images',
+      filename: editFileName
+    })
+  }))
+  update(@Param('id') id: string, @Body() body: UpdateMovieDTO, @UploadedFile() file) {
+    body.releaseYear = castNumParam('releaseYear', body.releaseYear);
+    body.image = file.filename;
     return this.moviesService.update(castNumParam('id', id), body);
   }
 
