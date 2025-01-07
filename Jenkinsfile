@@ -113,13 +113,5 @@ pipeline {
             title: JOB_NAME,
             webhookURL: "${DISCORD_WEBHOOK}"
         }
-        always {
-            discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} processed\n\ngit commit message :\n${GIT_COMMIT_MSG}",
-            footer: "just for test",
-            link: "$BUILD_URL",
-            result: currentBuild.currentResult,
-            title: JOB_NAME,
-            webhookURL: "${DISCORD_WEBHOOK}"
-        }
     }
 }
