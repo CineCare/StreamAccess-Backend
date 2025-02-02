@@ -21,8 +21,6 @@ pipeline {
                 sh 'echo ${BRANCH_NAME}'
                 sh 'echo ${DOCKER_TAG}'
                 sh 'echo ${ENV_ID}'
-                sh 'echo ${DISCORD_WEBHOOK}'
-                
             }
         }
 
