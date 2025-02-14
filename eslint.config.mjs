@@ -33,7 +33,7 @@ export default [{
 
         parserOptions: {
             project: "tsconfig.json",
-            tsconfigRootDir: "C:\\Users\\werqu\\Desktop\\WebDev\\CineCare\\StreamAccess\\Backend",
+            tsconfigRootDir: ".",
         },
     },
 
