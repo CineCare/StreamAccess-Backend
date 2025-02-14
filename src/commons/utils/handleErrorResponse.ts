@@ -19,7 +19,7 @@ export function handleErrorResponse(
   if (e instanceof BadRequestException || e instanceof UnauthorizedException) {
     throw e;
   }
-  // eslint-disable-next-line
+  // eslint-disable-next-line no-console
   console.log(e);
   throw new BadRequestException();
 }
