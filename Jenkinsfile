@@ -67,7 +67,7 @@ pipeline {
             }
             post {
                 always {
-                    junit '$WORKSPACE/test-results/test-results.xml'
+                    junit "${env.WORKSPACE}/test-results/test-results.xml"
                     recordIssues aggregatingResults: true, enabledForFailure: true, failOnError: true, ignoreQualityGate: false, skipPublishingChecks: true, sourceDirectories: [[path: 'src']], tools: [checkStyle(pattern: 'eslint.xml')]
                 }
             }
