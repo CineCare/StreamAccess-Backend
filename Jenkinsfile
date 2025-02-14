@@ -62,7 +62,7 @@ pipeline {
             steps {
                 echo 'performing test...'
                 sh '''
-                    npm run ci_test
+                    npm run ci_tests
                 '''
             }
             post {
