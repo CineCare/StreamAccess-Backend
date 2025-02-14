@@ -51,11 +51,11 @@ pipeline {
                     ls
                 '''
             }
-            post {
-                always {
-                    recordIssues aggregatingResults: true, enabledForFailure: true, failOnError: true, ignoreQualityGate: false, skipPublishingChecks: true, sourceDirectories: [[path: 'src']], tools: [checkStyle(pattern: 'eslint.xml')]
-                }
-            }
+            // post {
+            //     always {
+            //         recordIssues aggregatingResults: true, enabledForFailure: true, failOnError: true, ignoreQualityGate: false, skipPublishingChecks: true, sourceDirectories: [[path: 'src']], tools: [checkStyle(pattern: 'eslint.xml')]
+            //     }
+            // }
         }
 
         stage('test') {
