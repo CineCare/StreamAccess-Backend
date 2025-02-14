@@ -16,6 +16,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "ci_lint": "eslint \"{src,apps,libs,test}/**/*.ts\" -f checkstyle -o eslint.xml",
     "test": "jest",
+    "ci_tests": "jest --ci --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -83,6 +84,10 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      ["jest-junit", { "outputDirectory": "./test-results", "outputName": "test-results.xml" }]
+    ]
   }
 }

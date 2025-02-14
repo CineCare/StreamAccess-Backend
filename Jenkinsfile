@@ -58,6 +58,21 @@ pipeline {
             }
         }
 
+        stage('test') {
+            steps {
+                echo 'performing test...'
+                sh '''
+                    npm run ci_test
+                '''
+            }
+            post {
+                always {
+                    junit './test-results/test-results.xml'
+                    recordIssues aggregatingResults: true, enabledForFailure: true, failOnError: true, ignoreQualityGate: false, skipPublishingChecks: true, sourceDirectories: [[path: 'src']], tools: [checkStyle(pattern: 'eslint.xml')]
+                }
+            }
+        }
+
         stage('build & push docker image') {
             when {
                 expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
