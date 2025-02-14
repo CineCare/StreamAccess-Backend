@@ -16,7 +16,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "ci_lint": "eslint \"{src,apps,libs,test}/**/*.ts\" -f checkstyle -o eslint.xml",
     "test": "jest",
-    "ci_tests": "jest --ci --runInBand",
+    "ci_tests": "jest --outputFile=\"test-results.xml\"",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
