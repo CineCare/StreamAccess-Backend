@@ -68,7 +68,10 @@ export class MoviesController {
       }),
     }),
   )
-  create(@Body() body: CreateMovieDTO, @UploadedFile() file: Express.Multer.File) {
+  create(
+    @Body() body: CreateMovieDTO,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     body.image = file.filename;
     return this.moviesService.create(body);
   }

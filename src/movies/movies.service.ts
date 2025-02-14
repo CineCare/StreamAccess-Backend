@@ -23,14 +23,15 @@ export class MoviesService {
   }
 
   async create(body: CreateMovieDTO) {
-    const entity: CreateMovieEntity = {...body, releaseYear : parseInt(body.releaseYear)};
+    const entity: CreateMovieEntity = {
+      ...body,
+      releaseYear: parseInt(body.releaseYear),
+    };
     try {
       return await this.prisma.movie.create({ data: entity });
-    }
-    catch (e) {
+    } catch (e) {
       handleErrorResponse(e, 'Le film', entity.title);
     }
-    
   }
 
   async update(id: number, body: UpdateMovieDTO) {

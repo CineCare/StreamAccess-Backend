@@ -1,4 +1,5 @@
 import { extname } from 'path';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const sanitize = require('sanitize-filename');
 
 export const editFileName = (req, file, callback) => {
