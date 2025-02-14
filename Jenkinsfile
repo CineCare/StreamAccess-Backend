@@ -44,6 +44,20 @@ pipeline {
             }
         }
 
+        stage('lint') {
+            steps {
+                sh '''
+                    npm run ci_eslint
+                    ls
+                '''
+            }
+            post {
+                always {
+                    recordIssues aggregatingResults: true, enabledForFailure: true, failOnError: true, ignoreQualityGate: false, skipPublishingChecks: true, sourceDirectories: [[path: 'src']], tools: [checkStyle(pattern: 'eslint.xml')]
+                }
+            }
+        }
+
         stage('build & push docker image') {
             when {
                 expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
