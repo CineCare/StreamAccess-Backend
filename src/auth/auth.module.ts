@@ -3,11 +3,11 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from '../prisma/prisma.module';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { AdminStrategy } from './strategy/admin.strategy';
-import { MailModule } from 'src/mail/mail.module';
+import { MailModule } from '../mail/mail.module';
 
 //TODO set in .env
 export const jwtSecret = 'super_secret_password';

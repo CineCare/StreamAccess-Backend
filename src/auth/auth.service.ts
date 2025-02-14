@@ -53,16 +53,18 @@ export class AuthService {
   }
 
   async validate(ids: number[]): Promise<void> {
-    for(let id of ids) {
+    for (const id of ids) {
       const user = await this.prisma.user.findFirstOrThrow({ where: { id } });
-      await this.prisma.user.update({ data: { isActive: true }, where: { id } });
+      await this.prisma.user.update({
+        data: { isActive: true },
+        where: { id },
+      });
       await this.mailService.sendAccountValidation(user.pseudo, user.email);
     }
-    
   }
 
   async reject(ids: number[]): Promise<void> {
-    for(let id of ids) {
+    for (const id of ids) {
       const user = await this.prisma.user.findFirstOrThrow({ where: { id } });
       await this.mailService.sendAccountRejection(user.pseudo, user.email);
       await this.prisma.user.delete({ where: { id } });

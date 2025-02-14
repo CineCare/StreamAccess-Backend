@@ -21,7 +21,7 @@ export class UsersService {
 
   async getOne(id: number, additionnalFields?: object): Promise<UserEntity> {
     return await this.prisma.user.findUniqueOrThrow({
-      where: { id },
+      where: { id: id },
       select: { id: true, pseudo: true, isActive: true, ...additionnalFields },
     });
   }
@@ -34,7 +34,7 @@ export class UsersService {
   }
 
   async updateMe(id: number, data: UpdateUserDTO): Promise<UserEntity> {
-    let newData: UpdateUserEntity = {};
+    const newData: UpdateUserEntity = {};
     if (data.actualPassword) {
       const crypt = await bcrypt.hash(data.actualPassword, roundsOfHashing);
       const storedCrypt = (

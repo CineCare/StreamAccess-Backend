@@ -1,6 +1,18 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { castNumParam } from 'src/commons/utils/castNumParam';
+import { castNumParam } from '../commons/utils/castNumParam';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateMovieDTO } from './DTO/movieCreate.dto';
@@ -9,11 +21,12 @@ import { UpdateMovieDTO } from './DTO/movieUpdate.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editFileName } from '../commons/utils/fileUpload';
+import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
 
 @Controller('movies')
 @ApiTags('movies')
 export class MoviesController {
-    constructor(private readonly moviesService: MoviesService) {}
+  constructor(private readonly moviesService: MoviesService) {}
 
   @Get('')
   @ApiOkResponse()
@@ -21,6 +34,18 @@ export class MoviesController {
   @UseGuards(JwtAuthGuard)
   getList() {
     return this.moviesService.getList();
+  }
+
+  /**
+   *
+   *  Must be placed before @Get(':id') to avoid conflicts
+   */
+
+  @Get('tags')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  getTags() {
+    return this.moviesService.getTags();
   }
 
   @Get(':id')
@@ -35,27 +60,36 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  @UseInterceptors(FileInterceptor('image', {
-    storage: diskStorage({
-      destination: './assets/movies_images',
-      filename: editFileName
-    })
-  }))
-  create(@Body() body: CreateMovieDTO, @UploadedFile() file) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './assets/movies_images',
+        filename: editFileName,
+      }),
+    }),
+  )
+  create(@Body() body: CreateMovieDTO, @UploadedFile() file: Express.Multer.File) {
+    body.image = file.filename;
     return this.moviesService.create(body);
   }
-  
+
   @Put(':id')
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  @UseInterceptors(FileInterceptor('image', {
-    storage: diskStorage({
-      destination: './assets/movies_images',
-      filename: editFileName
-    })
-  }))
-  update(@Param('id') id: string, @Body() body: UpdateMovieDTO, @UploadedFile() file) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './assets/movies_images',
+        filename: editFileName,
+      }),
+    }),
+  )
+  update(
+    @Param('id') id: string,
+    @Body() body: UpdateMovieDTO,
+    @UploadedFile() file,
+  ) {
     body.releaseYear = castNumParam('releaseYear', body.releaseYear);
     body.image = file.filename;
     return this.moviesService.update(castNumParam('id', id), body);
@@ -68,5 +102,53 @@ export class MoviesController {
   @UseGuards(AdminAuthGuard)
   delete(@Param('id') id: string) {
     return this.moviesService.delete(castNumParam('id', id));
+  }
+
+  /**
+   *
+   *  Tags
+   *
+   */
+
+  @Post('tag')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  createTag(@Body() body: CreateMovieTagDTO) {
+    return this.moviesService.createTag(body);
+  }
+
+  @Delete('tag/:id')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @HttpCode(204)
+  @UseGuards(AdminAuthGuard)
+  deleteTag(@Param('id') id: string) {
+    return this.moviesService.deleteTag(castNumParam('id', id));
+  }
+
+  @Post(':id/tags')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  addTags(@Param('id') id: string, @Body() body: number[]) {
+    return this.moviesService.addTags(castNumParam('movie id', id), body);
+  }
+
+  @Get(':id/tags')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  getMovieTags(@Param('id') id: string) {
+    return this.moviesService.getMovieTags(castNumParam('movie id', id));
+  }
+
+  @Delete(':id/tags')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  deleteMovieTags(@Param('id') id: string, @Body() body: number[]) {
+    return this.moviesService.deleteMovieTagMovieList(
+      castNumParam('movie id', id),
+      body,
+    );
   }
 }

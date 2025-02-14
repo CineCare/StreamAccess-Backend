@@ -36,12 +36,48 @@ model Prefs {
   playRateControl Boolean?
   contentSummary Boolean?
   simplifiedExplanation Boolean?
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Movie {
   id Int @id @default(autoincrement())
-  title String
+  title String @unique
   releaseYear Int
   image String?
+  producerId Int?
+  producer Producer? @relation(fields: [producerId], references: [id], onDelete: SetNull)
+  directorId Int?
+  director Director? @relation(fields: [directorId], references: [id], onDelete: SetNull)
+  shortSynopsis String?
+  longSynopsis String?
+  teamComment String?
+  tags MovieTagMovie[]
+}
+
+model Producer {
+  id Int @id @default(autoincrement())
+  name String
+  biography String?
+  movies Movie[]
+}
+
+model Director {
+  id Int @id @default(autoincrement())
+  name String
+  biography String?
+  movies Movie[]
+}
+
+model MovieTag {
+  id Int @id @default(autoincrement())
+  label String
+  movieTagsMovies MovieTagMovie[]
+}
+
+model MovieTagMovie {
+  id Int @id @default(autoincrement())
+  movieId Int
+  tagId Int
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  tag MovieTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
 }

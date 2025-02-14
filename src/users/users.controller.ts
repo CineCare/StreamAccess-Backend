@@ -1,5 +1,21 @@
-import { BadRequestException, Controller, Get, Param, Put, Req, UseGuards, Request, Body } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Param,
+  Put,
+  Req,
+  UseGuards,
+  Request,
+  Body,
+} from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
@@ -29,11 +45,14 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   getMe(@Req() req) {
     console.log(req.user.id);
-    return this.usersService.getOne(req.user.id, { email: true, isActive: true });
+    return this.usersService.getOne(req.user.id, {
+      email: true,
+      isActive: true,
+    });
   }
 
   @Get('candidates')
-  @ApiOkResponse({ type: Array<CandidateEntity>})
+  @ApiOkResponse({ type: Array<CandidateEntity> })
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
   getCandidates() {
@@ -65,5 +84,4 @@ export class UsersController {
       handleErrorResponse(e, 'id', id);
     }
   }
-
 }

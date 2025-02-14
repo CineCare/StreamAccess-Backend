@@ -10,7 +10,7 @@ async function bootstrap() {
   });
 
   app.useStaticAssets(join(__dirname, '..', 'assets'), {
-    prefix: '/assets/'
+    prefix: '/assets/',
   });
 
   //swagger

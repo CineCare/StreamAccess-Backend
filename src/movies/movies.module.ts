@@ -10,9 +10,9 @@ import { MulterModule } from '@nestjs/platform-express';
   imports: [
     PrismaModule,
     MulterModule.register({
-      dest: './assets/movies_images'
-    })
+      dest: './assets/movies_images',
+    }),
   ],
-  exports: [MoviesService]
+  exports: [MoviesService],
 })
 export class MoviesModule {}

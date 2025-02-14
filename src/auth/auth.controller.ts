@@ -1,4 +1,11 @@
-import { Controller, Body, Post, Query, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Post,
+  Query,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entities/auth.entity';
@@ -32,7 +39,7 @@ export class AuthController {
     try {
       ids = JSON.parse(query.ids);
     } catch {
-      throw new BadRequestException("invalid Id array");
+      throw new BadRequestException('invalid Id array');
     }
     return this.authService.validate(ids);
     //return this.authService.validate(castNumParam('id', query.id));
@@ -47,7 +54,7 @@ export class AuthController {
     try {
       ids = JSON.parse(query.ids);
     } catch {
-      throw new BadRequestException("invalid Id array");
+      throw new BadRequestException('invalid Id array');
     }
     return this.authService.reject(ids);
   }
