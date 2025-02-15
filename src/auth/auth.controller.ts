@@ -37,12 +37,11 @@ export class AuthController {
   validate(@Query() query) {
     let ids: number[];
     try {
-      ids = JSON.parse(query.ids);
+      ids = JSON.parse(`[${query.ids}]`);
     } catch {
       throw new BadRequestException('invalid Id array');
     }
     return this.authService.validate(ids);
-    //return this.authService.validate(castNumParam('id', query.id));
   }
 
   @Post('reject')
