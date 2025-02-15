@@ -28,9 +28,15 @@ export class MoviesService {
   async create(body: CreateMovieDTO) {
     const entity: CreateMovieEntity = {
       ...body,
-      releaseYear: castNumParam('releaseYear', body.releaseYear),
-      producerId: castNumParam('producerId', body.producerId),
-      directorId: castNumParam('directorId', body.directorId),
+      releaseYear: body.releaseYear
+      ? castNumParam('releaseYear', body.releaseYear)
+      : undefined,
+    producerId: body.producerId
+      ? castNumParam('producerId', body.producerId)
+      : undefined,
+    directorId: body.directorId
+      ? castNumParam('directorId', body.directorId)
+      : undefined,
     };
     try {
       return await this.prisma.movie.create({ data: entity });
