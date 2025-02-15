@@ -4,7 +4,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateMovieDTO } from './DTO/movieCreate.dto';
 import { UpdateMovieDTO } from './DTO/movieUpdate.dto';
 import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
-import { CreateMovieEntity } from './entities/movieCreate.entity';
+import { CreateProducerDTO } from './DTO/producerCreate.dto';
+import { UpdateMovieEntity } from './entities/movieUpdate.entity';
+import { castNumParam } from 'src/commons/utils/castNumParam';
 
 @Injectable()
 export class MoviesService {
@@ -23,20 +25,28 @@ export class MoviesService {
   }
 
   async create(body: CreateMovieDTO) {
-    const entity: CreateMovieEntity = {
-      ...body,
-      releaseYear: parseInt(body.releaseYear),
-    };
     try {
-      return await this.prisma.movie.create({ data: entity });
+      return await this.prisma.movie.create({ data: body });
     } catch (e) {
-      handleErrorResponse(e, 'Le film', entity.title);
+      handleErrorResponse(e, 'Le film', body.title);
     }
   }
 
   async update(id: number, body: UpdateMovieDTO) {
+    const entity: UpdateMovieEntity = {
+      ...body,
+      releaseYear: body.releaseYear
+        ? castNumParam('releaseYear', body.releaseYear)
+        : undefined,
+      producerId: body.producerId
+        ? castNumParam('producerId', body.producerId)
+        : undefined,
+      directorId: body.directorId
+        ? castNumParam('directorId', body.directorId)
+        : undefined,
+    };
     try {
-      return await this.prisma.movie.update({ where: { id }, data: body });
+      return await this.prisma.movie.update({ where: { id }, data: entity });
     } catch (e) {
       handleErrorResponse(e, 'movieId', id.toString());
     }
@@ -122,5 +132,53 @@ export class MoviesService {
         })
       ).count,
     };
+  }
+
+  /**
+   *
+   * producers
+   *
+   */
+
+  async createProducer(body: CreateProducerDTO) {
+    return await this.prisma.producer.create({ data: body });
+  }
+
+  async getProducers() {
+    return await this.prisma.producer.findMany();
+  }
+
+  async getProducer(id: number) {
+    try {
+      return await this.prisma.producer.findUniqueOrThrow({ where: { id } });
+    } catch (e) {
+      handleErrorResponse(e, 'producerId', id.toString());
+    }
+  }
+
+  async updateProducer(id: number, body: CreateProducerDTO) {
+    try {
+      return await this.prisma.producer.update({ where: { id }, data: body });
+    } catch (e) {
+      handleErrorResponse(e, 'producerId', id.toString());
+    }
+  }
+
+  async deleteProducer(id: number) {
+    try {
+      return await this.prisma.producer.delete({ where: { id } });
+    } catch (e) {
+      handleErrorResponse(e, 'producerId', id.toString());
+    }
+  }
+
+  async getProducerMovies(id: number) {
+    // TODO: add error handling
+    try {
+      await this.prisma.producer.findUniqueOrThrow({ where: { id } });
+    } catch (e) {
+      handleErrorResponse(e, 'producerId', id.toString());
+    }
+    return await this.prisma.movie.findMany({ where: { producerId: id } });
   }
 }

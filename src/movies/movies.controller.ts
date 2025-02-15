@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editFileName } from '../commons/utils/fileUpload';
 import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
+import { CreateProducerDTO } from './DTO/producerCreate.dto';
 
 @Controller('movies')
 @ApiTags('movies')
@@ -39,6 +40,7 @@ export class MoviesController {
   /**
    *
    *  Must be placed before @Get(':id') to avoid conflicts
+   *
    */
 
   @Get('tags')
@@ -47,6 +49,19 @@ export class MoviesController {
   getTags() {
     return this.moviesService.getTags();
   }
+
+  @Get('producers')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  getProducers() {
+    return this.moviesService.getProducers();
+  }
+
+  /**
+   *
+   * Movies
+   *
+   */
 
   @Get(':id')
   @ApiOkResponse()
@@ -93,7 +108,6 @@ export class MoviesController {
     @Body() body: UpdateMovieDTO,
     @UploadedFile() file,
   ) {
-    body.releaseYear = castNumParam('releaseYear', body.releaseYear);
     body.image = file.filename;
     return this.moviesService.update(castNumParam('id', id), body);
   }
@@ -148,9 +162,42 @@ export class MoviesController {
   @Delete(':id/tags')
   @ApiOkResponse()
   @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
   deleteMovieTags(@Param('id') id: string, @Body() body: number[]) {
     return this.moviesService.deleteMovieTagMovieList(
       castNumParam('movie id', id),
+      body,
+    );
+  }
+
+  /**
+   *
+   * Producers
+   *
+   */
+
+  @Post('producer')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  createProducer(@Body() body: CreateProducerDTO) {
+    return this.moviesService.createProducer(body);
+  }
+
+  @Get('producer/:id')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  getProducer(@Param('id') id: string) {
+    return this.moviesService.getProducer(castNumParam('producerId', id));
+  }
+
+  @Put('producer/:id')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  updateProducer(@Param('id') id: string, @Body() body: CreateProducerDTO) {
+    return this.moviesService.updateProducer(
+      castNumParam('producerId', id),
       body,
     );
   }

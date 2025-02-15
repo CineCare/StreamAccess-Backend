@@ -48,8 +48,8 @@ model Movie {
   producer Producer? @relation(fields: [producerId], references: [id], onDelete: SetNull)
   directorId Int?
   director Director? @relation(fields: [directorId], references: [id], onDelete: SetNull)
-  shortSynopsis String?
-  longSynopsis String?
+  shortSynopsis String? @db.VarChar(500)
+  longSynopsis String ? @db.VarChar(2000)
   teamComment String?
   tags MovieTagMovie[]
 }

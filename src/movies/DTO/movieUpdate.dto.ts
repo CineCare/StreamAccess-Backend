@@ -8,8 +8,14 @@ export class UpdateMovieDTO {
 
   @IsNotEmpty()
   @ApiProperty()
-  releaseYear?: number;
+  releaseYear?: string;
 
   @ApiProperty()
   image?: string;
+
+  @ApiProperty()
+  producerId?: string;
+
+  @ApiProperty()
+  directorId?: string;
 }

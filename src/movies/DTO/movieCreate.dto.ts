@@ -8,7 +8,7 @@ export class CreateMovieDTO {
 
   @IsNotEmpty()
   @ApiProperty()
-  releaseYear: string;
+  releaseYear: number;
 
   @ApiProperty()
   image?: string;
