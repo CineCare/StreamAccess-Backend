@@ -7,7 +7,7 @@ import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
 import { CreateProducerDTO } from './DTO/producerCreate.dto';
 import { UpdateMovieEntity } from './entities/movieUpdate.entity';
 import { castNumParam } from '../commons/utils/castNumParam';
-import { CreateMovieEntity } from './entities/movieCreate.etity';
+import { CreateMovieEntity } from './entities/movieCreate.entity';
 
 @Injectable()
 export class MoviesService {
@@ -29,14 +29,14 @@ export class MoviesService {
     const entity: CreateMovieEntity = {
       ...body,
       releaseYear: body.releaseYear
-      ? castNumParam('releaseYear', body.releaseYear)
-      : undefined,
-    producerId: body.producerId
-      ? castNumParam('producerId', body.producerId)
-      : undefined,
-    directorId: body.directorId
-      ? castNumParam('directorId', body.directorId)
-      : undefined,
+        ? castNumParam('releaseYear', body.releaseYear)
+        : undefined,
+      producerId: body.producerId
+        ? castNumParam('producerId', body.producerId)
+        : undefined,
+      directorId: body.directorId
+        ? castNumParam('directorId', body.directorId)
+        : undefined,
     };
     try {
       return await this.prisma.movie.create({ data: entity });

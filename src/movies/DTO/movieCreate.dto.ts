@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumberString } from 'class-validator';
 
 export class CreateMovieDTO {
   @IsNotEmpty()
@@ -8,14 +8,17 @@ export class CreateMovieDTO {
 
   @IsNotEmpty()
   @ApiProperty()
+  @IsNumberString()
   releaseYear: string;
 
   @ApiProperty()
   image?: string;
 
   @ApiProperty()
+  @IsNumberString()
   producerId?: string;
 
   @ApiProperty()
+  @IsNumberString()
   directorId?: string;
 }
