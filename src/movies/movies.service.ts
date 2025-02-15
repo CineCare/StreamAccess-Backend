@@ -7,6 +7,7 @@ import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
 import { CreateProducerDTO } from './DTO/producerCreate.dto';
 import { UpdateMovieEntity } from './entities/movieUpdate.entity';
 import { castNumParam } from '../commons/utils/castNumParam';
+import { CreateMovieEntity } from './entities/movieCreate.etity';
 
 @Injectable()
 export class MoviesService {
@@ -25,8 +26,14 @@ export class MoviesService {
   }
 
   async create(body: CreateMovieDTO) {
+    const entity: CreateMovieEntity = {
+      ...body,
+      releaseYear: castNumParam('releaseYear', body.releaseYear),
+      producerId: castNumParam('producerId', body.producerId),
+      directorId: castNumParam('directorId', body.directorId),
+    };
     try {
-      return await this.prisma.movie.create({ data: body });
+      return await this.prisma.movie.create({ data: entity });
     } catch (e) {
       handleErrorResponse(e, 'Le film', body.title);
     }
