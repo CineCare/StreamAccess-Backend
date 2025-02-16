@@ -196,13 +196,13 @@ export class MoviesService {
   }
 
   /**
-   * 
+   *
    * directors
-   * 
+   *
    */
 
   async createDirector(body: CreateDirectorDTO) {
-    return await this.prisma.director.create({data: body});
+    return await this.prisma.director.create({ data: body });
   }
 
   async getDirectors() {
@@ -241,5 +241,4 @@ export class MoviesService {
     }
     return await this.prisma.movie.findMany({ where: { directorId: id } });
   }
-
 }

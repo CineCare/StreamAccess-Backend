@@ -204,10 +204,7 @@ export class MoviesController {
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
   updateProducer(@Param('id') id: string, @Body() body: CreateProducerDTO) {
-    return this.moviesService.updateProducer(
-      castNumParam('id', id),
-      body,
-    );
+    return this.moviesService.updateProducer(castNumParam('id', id), body);
   }
 
   @Delete('producer/:id')
@@ -226,9 +223,9 @@ export class MoviesController {
   }
 
   /**
-   * 
+   *
    * Directors
-   * 
+   *
    */
 
   @Post('director')
@@ -251,10 +248,7 @@ export class MoviesController {
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
   updateDirector(@Param('id') id: string, @Body() body: CreateDirectorDTO) {
-    return this.moviesService.updateDirector(
-      castNumParam('id', id),
-      body,
-    );
+    return this.moviesService.updateDirector(castNumParam('id', id), body);
   }
 
   @Delete('director/:id')
@@ -271,5 +265,4 @@ export class MoviesController {
   getDirectorFilms(@Param('id') id: string) {
     return this.moviesService.getDirectorMovies(castNumParam('id', id));
   }
-
 }
