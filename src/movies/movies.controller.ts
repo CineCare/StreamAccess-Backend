@@ -201,4 +201,19 @@ export class MoviesController {
       body,
     );
   }
+
+  @Delete('producer/:id')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  deleteProducer(@Param('id') id: string) {
+    return this.moviesService.deleteProducer(castNumParam('producerId', id));
+  }
+
+  @Get('producer/:id/movies')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  getProducerFilms(@Param('id') id: string) {
+    return this.moviesService.getProducerMovies(castNumParam('producerId', id));
+  }
 }
