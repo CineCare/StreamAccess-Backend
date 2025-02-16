@@ -57,14 +57,14 @@ model Movie {
 model Producer {
   id Int @id @default(autoincrement())
   name String
-  biography String?
+  biography String? @db.VarChar(2000)
   movies Movie[]
 }
 
 model Director {
   id Int @id @default(autoincrement())
   name String
-  biography String?
+  biography String? @db.VarChar(2000)
   movies Movie[]
 }
 

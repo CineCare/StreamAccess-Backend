@@ -8,6 +8,7 @@ import { CreateProducerDTO } from './DTO/producerCreate.dto';
 import { UpdateMovieEntity } from './entities/movieUpdate.entity';
 import { castNumParam } from '../commons/utils/castNumParam';
 import { CreateMovieEntity } from './entities/movieCreate.entity';
+import { CreateDirectorDTO } from './DTO/directorCreateDTO';
 
 @Injectable()
 export class MoviesService {
@@ -186,7 +187,6 @@ export class MoviesService {
   }
 
   async getProducerMovies(id: number) {
-    // TODO: add error handling
     try {
       await this.prisma.producer.findUniqueOrThrow({ where: { id } });
     } catch (e) {
@@ -194,4 +194,52 @@ export class MoviesService {
     }
     return await this.prisma.movie.findMany({ where: { producerId: id } });
   }
+
+  /**
+   * 
+   * directors
+   * 
+   */
+
+  async createDirector(body: CreateDirectorDTO) {
+    return await this.prisma.director.create({data: body});
+  }
+
+  async getDirectors() {
+    return await this.prisma.director.findMany();
+  }
+
+  async getDirector(id: number) {
+    try {
+      return await this.prisma.director.findUniqueOrThrow({ where: { id } });
+    } catch (e) {
+      handleErrorResponse(e, 'directorId', id.toString());
+    }
+  }
+
+  async updateDirector(id: number, body: CreateDirectorDTO) {
+    try {
+      return await this.prisma.director.update({ where: { id }, data: body });
+    } catch (e) {
+      handleErrorResponse(e, 'directorId', id.toString());
+    }
+  }
+
+  async deleteDirector(id: number) {
+    try {
+      return await this.prisma.director.delete({ where: { id } });
+    } catch (e) {
+      handleErrorResponse(e, 'directorId', id.toString());
+    }
+  }
+
+  async getDirectorMovies(id: number) {
+    try {
+      await this.prisma.director.findUniqueOrThrow({ where: { id } });
+    } catch (e) {
+      handleErrorResponse(e, 'directorId', id.toString());
+    }
+    return await this.prisma.movie.findMany({ where: { directorId: id } });
+  }
+
 }

@@ -23,6 +23,7 @@ import { diskStorage } from 'multer';
 import { editFileName } from '../commons/utils/fileUpload';
 import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
 import { CreateProducerDTO } from './DTO/producerCreate.dto';
+import { CreateDirectorDTO } from './DTO/directorCreateDTO';
 
 @Controller('movies')
 @ApiTags('movies')
@@ -55,6 +56,13 @@ export class MoviesController {
   @ApiBearerAuth()
   getProducers() {
     return this.moviesService.getProducers();
+  }
+
+  @Get('directors')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  getDirectors() {
+    return this.moviesService.getDirectors();
   }
 
   /**
@@ -108,7 +116,7 @@ export class MoviesController {
     @Body() body: UpdateMovieDTO,
     @UploadedFile() file,
   ) {
-    body.image = file.filename;
+    body.image = file ? file.filename : undefined;
     return this.moviesService.update(castNumParam('id', id), body);
   }
 
@@ -188,7 +196,7 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   getProducer(@Param('id') id: string) {
-    return this.moviesService.getProducer(castNumParam('producerId', id));
+    return this.moviesService.getProducer(castNumParam('id', id));
   }
 
   @Put('producer/:id')
@@ -197,7 +205,7 @@ export class MoviesController {
   @UseGuards(AdminAuthGuard)
   updateProducer(@Param('id') id: string, @Body() body: CreateProducerDTO) {
     return this.moviesService.updateProducer(
-      castNumParam('producerId', id),
+      castNumParam('id', id),
       body,
     );
   }
@@ -207,13 +215,61 @@ export class MoviesController {
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
   deleteProducer(@Param('id') id: string) {
-    return this.moviesService.deleteProducer(castNumParam('producerId', id));
+    return this.moviesService.deleteProducer(castNumParam('id', id));
   }
 
   @Get('producer/:id/movies')
   @ApiOkResponse()
   @ApiBearerAuth()
   getProducerFilms(@Param('id') id: string) {
-    return this.moviesService.getProducerMovies(castNumParam('producerId', id));
+    return this.moviesService.getProducerMovies(castNumParam('id', id));
   }
+
+  /**
+   * 
+   * Directors
+   * 
+   */
+
+  @Post('director')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  createDirector(@Body() body: CreateDirectorDTO) {
+    return this.moviesService.createDirector(body);
+  }
+
+  @Get('director/:id')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  getDirector(@Param('id') id: string) {
+    return this.moviesService.getDirector(castNumParam('id', id));
+  }
+
+  @Put('director/:id')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  updateDirector(@Param('id') id: string, @Body() body: CreateDirectorDTO) {
+    return this.moviesService.updateDirector(
+      castNumParam('id', id),
+      body,
+    );
+  }
+
+  @Delete('director/:id')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  deleteDirector(@Param('id') id: string) {
+    return this.moviesService.deleteDirector(castNumParam('id', id));
+  }
+
+  @Get('director/:id/movies')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  getDirectorFilms(@Param('id') id: string) {
+    return this.moviesService.getDirectorMovies(castNumParam('id', id));
+  }
+
 }
