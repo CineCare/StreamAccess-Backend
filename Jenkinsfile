@@ -70,8 +70,11 @@ pipeline {
 
         stage('SonarQube analysis') {
             steps {
+                script {
+                    scannerHome = tool 'SonarQubeScanner'
+                }
                 withSonarQubeEnv('SonarQubeScanner') {
-                    sh 'mvn clean package sonar:sonar'
+                    sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
         }
