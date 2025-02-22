@@ -84,11 +84,12 @@
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!src/**/*.spec.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "**/*.spec.ts"
+      ".*\\.spec\\.ts$"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
