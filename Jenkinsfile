@@ -3,7 +3,6 @@ pipeline {
 
     tools {
         nodejs 'nodeJS'
-        SonarQubeScanner 'SonarQubeScanner'
     }
 
     options { buildDiscarder(logRotator(numToKeepStr: '5')) }
