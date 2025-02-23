@@ -43,7 +43,7 @@ export class AuthService {
   ): Promise<AuthEntity> {
     const hash = await bcrypt.hash(password, roundsOfHashing);
     const existingUser = await this.prisma.user.findFirst({ where: { email } });
-    if (existingUser !== null) {
+    if (existingUser) {
       throw new BadRequestException('email ou mot de passe invalide');
     }
     const user = await this.prisma.user.create({
