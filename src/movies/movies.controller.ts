@@ -89,7 +89,6 @@ export class MoviesController {
       limits: {
         fileSize: 8000000, // Compliant: 8MB
       },
-      // sonarlint-disable-next-line
       storage: diskStorage({
         destination: './assets/movies_images',
         filename: editFileName,
