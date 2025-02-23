@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { castNumParam } from '../commons/utils/castNumParam';
@@ -89,13 +90,23 @@ export class MoviesController {
         destination: './assets/movies_images',
         filename: editFileName,
       }),
+      limits: {
+        fileSize: 8000000, // Compliant: 8MB
+      },
     }),
   )
   create(
-    @Body() body: CreateMovieDTO,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        skipMissingProperties: true,
+      }),
+    )
+    body: CreateMovieDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    body.image = file.filename;
+    body.image = file ? file.filename : undefined;
     return this.moviesService.create(body);
   }
 
@@ -232,7 +243,7 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  createDirector(@Body() body: CreateDirectorDTO) {
+  createDirector(@Body(new ValidationPipe()) body: CreateDirectorDTO) {
     return this.moviesService.createDirector(body);
   }
 

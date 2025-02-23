@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthEntity } from './entities/auth.entity';
 import { MailService } from '../mail/mail.service';
+import { LoginDTO } from './DTO/login.dto';
 
 //TODO set in .env
 export const roundsOfHashing = 10;
@@ -20,11 +21,13 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  async login(email: string, password: string): Promise<AuthEntity> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+  async login(body: LoginDTO): Promise<AuthEntity> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: body.email },
+    });
     const isPasswordValid = !user
       ? false
-      : await bcrypt.compare(password, user.password);
+      : await bcrypt.compare(body.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Incorrect email and/or password !');
     }

@@ -5,6 +5,8 @@ import {
   Query,
   UseGuards,
   BadRequestException,
+  HttpCode,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -19,9 +21,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @HttpCode(200)
   @ApiOkResponse({ type: AuthEntity })
-  login(@Body() { email, password }: LoginDTO) {
-    return this.authService.login(email, password);
+  login(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: LoginDTO,
+  ) {
+    return this.authService.login(body);
   }
 
   @Post('register')
