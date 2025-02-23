@@ -7,7 +7,7 @@ import { UsersModule } from '../../users/users.module';
 import { AuthController } from '../auth.controller';
 import { jwtSecret } from '../auth.module';
 import { AdminStrategy } from '../strategy/admin.strategy';
-import { prismaMock } from './prismaMock';
+import { prismaMock } from '../../_tests/prismaMock';
 import * as bcrypt from 'bcrypt';
 import { MailService } from '../../mail/mail.service';
 import { PrismaClient } from '@prisma/client';

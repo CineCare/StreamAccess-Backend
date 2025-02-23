@@ -112,6 +112,6 @@
     ],
     "clearMocks": true,
     "preset": "ts-jest",
-    "setupFilesAfterEnv": ["../src/auth/_tests/prismaMock.ts"]
+    "setupFilesAfterEnv": ["../src/_tests/prismaMock.ts"]
   }
 }

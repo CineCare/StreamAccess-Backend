@@ -2,34 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from '../movies.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { MulterModule } from '@nestjs/platform-express';
-import { PrismaModule } from '../../prisma/prisma.module';
-import { MoviesController } from '../movies.controller';
 import { handleErrorResponse } from '../../commons/utils/handleErrorResponse';
-
-describe('MoviesService', () => {
-  let service: MoviesService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [MoviesController],
-      providers: [MoviesService],
-      imports: [
-        PrismaModule,
-        MulterModule.register({
-          dest: './assets/movies_images',
-        }),
-      ],
-      exports: [MoviesService],
-    }).compile();
-
-    service = module.get<MoviesService>(MoviesService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+import { NotFoundError } from 'rxjs';
 
 describe('MoviesService - addTags', () => {
   let service: MoviesService;
@@ -42,6 +16,11 @@ describe('MoviesService - addTags', () => {
         {
           provide: PrismaService,
           useValue: {
+            movie: {
+              create: jest.fn(),
+              findMany: jest.fn(),
+              findUniqueOrThrow: jest.fn(),
+            },
             movieTag: {
               count: jest.fn(),
             },
@@ -56,6 +35,89 @@ describe('MoviesService - addTags', () => {
 
     service = module.get<MoviesService>(MoviesService);
     prismaService = module.get<PrismaService>(PrismaService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  it('should return a movie list', async () => {
+    const movies = [
+      {
+        id: 1,
+        title: 'movie1',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+      {
+        id: 2,
+        title: 'movie2',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+      {
+        id: 3,
+        title: 'movie3',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+    ];
+
+    jest.spyOn(prismaService.movie, 'findMany').mockResolvedValue(movies);
+
+    const result = await service.getList();
+
+    expect(prismaService.movie.findMany).toHaveBeenCalled();
+    expect(result).toEqual(movies);
+  });
+
+  it('should return a movie', async () => {
+    const movie = {
+      id: 1,
+      title: 'movie1',
+      releaseYear: 2023,
+      image: 'default.jpg',
+      producerId: 1,
+      directorId: 1,
+      shortSynopsis: null,
+      longSynopsis: null,
+      teamComment: null,
+    };
+
+    jest
+      .spyOn(prismaService.movie, 'findUniqueOrThrow')
+      .mockResolvedValue(movie);
+
+    const result = await service.getOne(1);
+    expect(prismaService.movie.findUniqueOrThrow).toHaveBeenCalledWith({
+      where: { id: 1 },
+    });
+    expect(result).toEqual(movie);
+  });
+
+  it('should throw NotFoundException when getting a movie that does not exist', async () => {
+    jest
+      .spyOn(prismaService.movie, 'findUniqueOrThrow')
+      .mockRejectedValue({ code: 'P2025' });
+
+    expect(async () => await service.getOne(1)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('should add tags to a movie', async () => {
@@ -97,89 +159,65 @@ describe('MoviesService - addTags', () => {
     );
   });
 
-  describe('MoviesService - create', () => {
-    let service: MoviesService;
-    let prismaService: PrismaService;
+  it('should create a movie', async () => {
+    const createMovieDTO = {
+      title: 'Test Movie',
+      releaseYear: '2023',
+      producerId: '1',
+      directorId: '1',
+    };
 
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          MoviesService,
-          {
-            provide: PrismaService,
-            useValue: {
-              movie: {
-                create: jest.fn(),
-              },
-            },
-          },
-        ],
-      }).compile();
+    const createdMovie = {
+      id: 1,
+      ...createMovieDTO,
+      releaseYear: 2023,
+      producerId: 1,
+      directorId: 1,
+      image: 'default.jpg',
+      shortSynopsis: 'Short synopsis',
+      longSynopsis: 'Long synopsis',
+      teamComment: 'Team comment',
+    };
 
-      service = module.get<MoviesService>(MoviesService);
-      prismaService = module.get<PrismaService>(PrismaService);
-    });
+    jest.spyOn(prismaService.movie, 'create').mockResolvedValue(createdMovie);
 
-    it('should create a movie', async () => {
-      const createMovieDTO = {
-        title: 'Test Movie',
-        releaseYear: '2023',
-        producerId: '1',
-        directorId: '1',
-      };
+    const result = await service.create(createMovieDTO);
 
-      const createdMovie = {
-        id: 1,
+    expect(prismaService.movie.create).toHaveBeenCalledWith({
+      data: {
         ...createMovieDTO,
         releaseYear: 2023,
         producerId: 1,
         directorId: 1,
-        image: 'default.jpg',
-        shortSynopsis: 'Short synopsis',
-        longSynopsis: 'Long synopsis',
-        teamComment: 'Team comment',
-      };
-
-      jest.spyOn(prismaService.movie, 'create').mockResolvedValue(createdMovie);
-
-      const result = await service.create(createMovieDTO);
-
-      expect(prismaService.movie.create).toHaveBeenCalledWith({
-        data: {
-          ...createMovieDTO,
-          releaseYear: 2023,
-          producerId: 1,
-          directorId: 1,
-        },
-      });
-      expect(result).toEqual(createdMovie);
+      },
     });
+    expect(result).toEqual(createdMovie);
+  });
 
-    it('should handle error response', async () => {
-      const createMovieDTO = {
-        title: 'Test Movie',
-        releaseYear: '2023',
-        producerId: '1',
-        directorId: '1',
-      };
+  it('should handle error response', async () => {
+    const createMovieDTO = {
+      title: 'Test Movie',
+      releaseYear: '2023',
+      producerId: '1',
+      directorId: '1',
+    };
 
-      const error = new Error('Test Error');
-      jest.spyOn(prismaService.movie, 'create').mockRejectedValue(error);
-      jest
-        .spyOn(
-          // eslint-disable-next-line @typescript-eslint/no-require-imports
-          require('../../commons/utils/handleErrorResponse'),
-          'handleErrorResponse',
-        )
-        .mockImplementation(() => {});
+    const error = new Error('Test Error');
+    jest.spyOn(prismaService.movie, 'create').mockRejectedValue(error);
+    jest
+      .spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        require('../../commons/utils/handleErrorResponse'),
+        'handleErrorResponse',
+      )
+      .mockImplementation(() => {});
 
-      await service.create(createMovieDTO);
+    await service.create(createMovieDTO);
 
-      expect(handleErrorResponse).toHaveBeenCalledWith(
-        error,
-        'Le film',
-        createMovieDTO.title,
-      );
-    });
+    expect(handleErrorResponse).toHaveBeenCalledWith(
+      error,
+      'Le film',
+      createMovieDTO.title,
+    );
   });
 });
