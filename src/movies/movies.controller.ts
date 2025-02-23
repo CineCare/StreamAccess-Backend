@@ -86,16 +86,14 @@ export class MoviesController {
   @UseGuards(AdminAuthGuard)
   @UseInterceptors(
     FileInterceptor('image', {
-      //NOSONAR_BEGIN
-      // for file size limit is set here
       limits: {
         fileSize: 8000000, // Compliant: 8MB
       },
+      // sonarlint-disable-next-line
       storage: diskStorage({
         destination: './assets/movies_images',
         filename: editFileName,
       }),
-      //NOSONAR_END
     }),
   )
   create(
