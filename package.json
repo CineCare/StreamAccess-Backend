@@ -94,7 +94,7 @@
       ".*\\.spec\\.ts$",
       ".*\\.controller\\.ts$",
       ".*\\.strategy\\.ts$",
-      ".*\\_tests\\",
+      ".*\\_tests\\.*",
       ".*\\.e2e-spec\\.ts$",
       "./main.ts"
     ],
