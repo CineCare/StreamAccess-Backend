@@ -86,13 +86,13 @@ export class MoviesController {
   @UseGuards(AdminAuthGuard)
   @UseInterceptors(
     FileInterceptor('image', {
+      limits: {
+        fileSize: 8000000, // Compliant: 8MB
+      },
       storage: diskStorage({
         destination: './assets/movies_images',
         filename: editFileName,
       }),
-      limits: {
-        fileSize: 8000000, // Compliant: 8MB
-      },
     }),
   )
   create(
