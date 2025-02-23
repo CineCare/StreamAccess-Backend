@@ -3,7 +3,6 @@ import { MoviesService } from '../movies.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { handleErrorResponse } from '../../commons/utils/handleErrorResponse';
-import { NotFoundError } from 'rxjs';
 
 describe('MoviesService - addTags', () => {
   let service: MoviesService;
