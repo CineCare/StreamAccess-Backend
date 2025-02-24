@@ -330,23 +330,6 @@ describe('MoviesService', () => {
   it('should add tags to a movie', async () => {
     const movieId = 1;
     const movieTags = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    const movieTagMovies = [
-      {
-        id: 1,
-        movieId,
-        tagId: 1,
-      },
-      {
-        id: 2,
-        movieId,
-        tagId: 2,
-      },
-      {
-        id: 3,
-        movieId,
-        tagId: 3,
-      },
-    ];
 
     const existing = [
       {
