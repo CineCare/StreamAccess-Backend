@@ -29,9 +29,7 @@ export class MoviesService {
   async create(body: CreateMovieDTO) {
     const entity: CreateMovieEntity = {
       ...body,
-      releaseYear: body.releaseYear
-        ? castNumParam('releaseYear', body.releaseYear)
-        : undefined,
+      releaseYear: castNumParam('releaseYear', body.releaseYear),
       producerId: body.producerId
         ? castNumParam('producerId', body.producerId)
         : undefined,

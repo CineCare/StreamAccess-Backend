@@ -119,6 +119,78 @@ describe('MoviesService - addTags', () => {
     );
   });
 
+  it.each([
+    {
+      title: 'Test Movie',
+      releaseYear: '2023',
+      producerId: '1',
+      directorId: '1',
+    },
+    {
+      title: 'Test Movie',
+      releaseYear: '2023',
+    },
+  ])('should create a movie', async (body) => {
+    const createMovieDTO = body;
+
+    const createdMovie = {
+      id: 1,
+      ...createMovieDTO,
+      releaseYear: 2023,
+      producerId: 1,
+      directorId: 1,
+      image: 'default.jpg',
+      shortSynopsis: 'Short synopsis',
+      longSynopsis: 'Long synopsis',
+      teamComment: 'Team comment',
+    };
+
+    jest.spyOn(prismaService.movie, 'create').mockResolvedValue(createdMovie);
+
+    const result = await service.create(createMovieDTO);
+
+    expect(prismaService.movie.create).toHaveBeenCalledWith({
+      data: {
+        ...createMovieDTO,
+        releaseYear: parseInt(body.releaseYear),
+        producerId: body.producerId ? parseInt(body.producerId) : undefined,
+        directorId: body.directorId ? parseInt(body.directorId) : undefined,
+      },
+    });
+    expect(result).toEqual(createdMovie);
+  });
+
+  it('should handle error response', async () => {
+    const createMovieDTO = {
+      title: 'Test Movie',
+      releaseYear: '2023',
+      producerId: '1',
+      directorId: '1',
+    };
+
+    const error = new Error('Test Error');
+    jest.spyOn(prismaService.movie, 'create').mockRejectedValue(error);
+    jest
+      .spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        require('../../commons/utils/handleErrorResponse'),
+        'handleErrorResponse',
+      )
+      .mockImplementation(() => {});
+
+    await service.create(createMovieDTO);
+
+    expect(handleErrorResponse).toHaveBeenCalledWith(
+      error,
+      'Le film',
+      createMovieDTO.title,
+    );
+  });
+
+  /**
+   * tags
+   */
+
   it('should add tags to a movie', async () => {
     const movieId = 1;
     const movieTags = [{ id: 1 }, { id: 2 }, { id: 3 }];
@@ -155,68 +227,6 @@ describe('MoviesService - addTags', () => {
 
     await expect(service.addTags(movieId, tagIds)).rejects.toThrow(
       NotFoundException,
-    );
-  });
-
-  it('should create a movie', async () => {
-    const createMovieDTO = {
-      title: 'Test Movie',
-      releaseYear: '2023',
-      producerId: '1',
-      directorId: '1',
-    };
-
-    const createdMovie = {
-      id: 1,
-      ...createMovieDTO,
-      releaseYear: 2023,
-      producerId: 1,
-      directorId: 1,
-      image: 'default.jpg',
-      shortSynopsis: 'Short synopsis',
-      longSynopsis: 'Long synopsis',
-      teamComment: 'Team comment',
-    };
-
-    jest.spyOn(prismaService.movie, 'create').mockResolvedValue(createdMovie);
-
-    const result = await service.create(createMovieDTO);
-
-    expect(prismaService.movie.create).toHaveBeenCalledWith({
-      data: {
-        ...createMovieDTO,
-        releaseYear: 2023,
-        producerId: 1,
-        directorId: 1,
-      },
-    });
-    expect(result).toEqual(createdMovie);
-  });
-
-  it('should handle error response', async () => {
-    const createMovieDTO = {
-      title: 'Test Movie',
-      releaseYear: '2023',
-      producerId: '1',
-      directorId: '1',
-    };
-
-    const error = new Error('Test Error');
-    jest.spyOn(prismaService.movie, 'create').mockRejectedValue(error);
-    jest
-      .spyOn(
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        require('../../commons/utils/handleErrorResponse'),
-        'handleErrorResponse',
-      )
-      .mockImplementation(() => {});
-
-    await service.create(createMovieDTO);
-
-    expect(handleErrorResponse).toHaveBeenCalledWith(
-      error,
-      'Le film',
-      createMovieDTO.title,
     );
   });
 });
