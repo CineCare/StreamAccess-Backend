@@ -348,6 +348,24 @@ describe('MoviesService', () => {
       },
     ];
 
+    const existing = [
+      {
+        id: 4,
+        movieId,
+        tagId: 4,
+      },
+      {
+        id: 5,
+        movieId,
+        tagId: 5,
+      },
+      {
+        id: 6,
+        movieId,
+        tagId: 6,
+      },
+    ];
+
     jest
       .spyOn(prismaMock.movieTag, 'count')
       .mockResolvedValue(movieTags.length);
@@ -356,7 +374,7 @@ describe('MoviesService', () => {
       .mockResolvedValue({ count: movieTags.length });
     jest
       .spyOn(prismaMock.movieTagMovie, 'findMany')
-      .mockResolvedValue(movieTagMovies);
+      .mockResolvedValue(existing);
 
     const result = await service.addTags(
       movieId,
