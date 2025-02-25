@@ -82,8 +82,8 @@ pipeline {
         stage('Sonar Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
-                    def qg = waitForQualityGate()
                     script {
+                        def qg = waitForQualityGate()
                         if(qg.status == 'Error') {
                             unstable('Quality gate failed')
                         }
