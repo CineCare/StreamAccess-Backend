@@ -85,7 +85,7 @@ pipeline {
                     script {
                         def qg = waitForQualityGate()
                         if(qg.status == 'ERROR') {
-                            def result = readJSON text: qg.conditions
+                            def result = readJSON text: qg
                             echo result.toString()
                             unstable('Quality gate failed')
                         }
