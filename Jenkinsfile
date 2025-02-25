@@ -83,8 +83,10 @@ pipeline {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
                     def qg = waitForQualityGate()
-                    if(qg.status == 'Error') {
-                        unstable('Quality gate failed')
+                    script {
+                        if(qg.status == 'Error') {
+                            unstable('Quality gate failed')
+                        }
                     }
                 }
             }
