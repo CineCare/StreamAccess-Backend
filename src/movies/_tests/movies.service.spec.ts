@@ -12,6 +12,42 @@ describe('MoviesService', () => {
   let service: MoviesService;
   let prismaMock: DeepMockProxy<PrismaClient>;
 
+  const movieList = [
+    {
+      id: 1,
+      title: 'movie1',
+      releaseYear: 2023,
+      image: 'default.jpg',
+      producerId: 1,
+      directorId: 1,
+      shortSynopsis: null,
+      longSynopsis: null,
+      teamComment: null,
+    },
+    {
+      id: 2,
+      title: 'movie2',
+      releaseYear: 2023,
+      image: 'default.jpg',
+      producerId: 1,
+      directorId: 1,
+      shortSynopsis: null,
+      longSynopsis: null,
+      teamComment: null,
+    },
+    {
+      id: 3,
+      title: 'movie3',
+      releaseYear: 2023,
+      image: 'default.jpg',
+      producerId: 1,
+      directorId: 1,
+      shortSynopsis: null,
+      longSynopsis: null,
+      teamComment: null,
+    },
+  ];
+
   beforeEach(async () => {
     prismaMock = mockDeep<PrismaClient>();
     const module: TestingModule = await Test.createTestingModule({
@@ -32,41 +68,8 @@ describe('MoviesService', () => {
   });
 
   it('should return a movie list', async () => {
-    const movies = [
-      {
-        id: 1,
-        title: 'movie1',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-      {
-        id: 2,
-        title: 'movie2',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-      {
-        id: 3,
-        title: 'movie3',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-    ];
+    
+    const movies = movieList;
 
     prismaMock.movie.findMany.mockResolvedValueOnce(movies);
 
@@ -532,41 +535,7 @@ describe('MoviesService', () => {
       biography: 'Sa vie, son oeuvre'
     };
 
-    const movies = [
-      {
-        id: 1,
-        title: 'movie1',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-      {
-        id: 2,
-        title: 'movie2',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-      {
-        id: 3,
-        title: 'movie3',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-    ];
+    const movies = movieList;
     
     prismaMock.producer.findUniqueOrThrow.mockResolvedValue(producer);
 
@@ -703,41 +672,7 @@ describe('MoviesService', () => {
       biography: 'Sa vie, son oeuvre'
     };
 
-    const movies = [
-      {
-        id: 1,
-        title: 'movie1',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-      {
-        id: 2,
-        title: 'movie2',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-      {
-        id: 3,
-        title: 'movie3',
-        releaseYear: 2023,
-        image: 'default.jpg',
-        producerId: 1,
-        directorId: 1,
-        shortSynopsis: null,
-        longSynopsis: null,
-        teamComment: null,
-      },
-    ];
+    const movies = movieList;
     
     prismaMock.director.findUniqueOrThrow.mockResolvedValue(director);
 
