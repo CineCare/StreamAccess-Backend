@@ -84,6 +84,7 @@ pipeline {
                 timeout(time: 1, unit: 'HOURS') {
                     script {
                         def qg = waitForQualityGate()
+                        echo qg.status
                         if(qg.status == 'Error') {
                             unstable('Quality gate failed')
                         }
