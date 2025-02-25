@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from '../movies.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -5,6 +6,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { UpdateMovieDTO } from '../DTO/movieUpdate.dto';
 import { PrismaClient } from '@prisma/client';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { CreateMovieDTO } from '../DTO/movieCreate.dto';
 
 describe('MoviesService', () => {
   let service: MoviesService;
@@ -114,7 +116,7 @@ describe('MoviesService', () => {
       releaseYear: '2023',
     },
   ])('should create a movie', async (body) => {
-    const createMovieDTO = body;
+    const createMovieDTO: CreateMovieDTO = body;
 
     const createdMovie = {
       id: 1,
@@ -144,7 +146,7 @@ describe('MoviesService', () => {
   });
 
   it('should handle error response if failed creating a movie', async () => {
-    const createMovieDTO = {
+    const createMovieDTO: CreateMovieDTO = {
       title: 'Test Movie',
       releaseYear: '2023',
       producerId: '1',
@@ -172,7 +174,7 @@ describe('MoviesService', () => {
       },
     },
   ])('should update a movie', async (data) => {
-    const updateMovieDTO = data.body as UpdateMovieDTO;
+    const updateMovieDTO: UpdateMovieDTO = data.body as UpdateMovieDTO;
 
     const updatedMovie = {
       id: data.id,
@@ -211,7 +213,7 @@ describe('MoviesService', () => {
   });
 
   it('Should fail updating a movie if not found', async () => {
-    const updateMovieDTO = {
+    const updateMovieDTO: UpdateMovieDTO = {
       title: 'Test Movie2',
     } as UpdateMovieDTO;
 
@@ -419,12 +421,339 @@ describe('MoviesService', () => {
 
   it('should create a producer', async () => {
     const producer = {
-      name: 'Coppola',
+      name: 'MGM',
       biography: 'Sa vie, son oeuvre',
     };
 
     prismaMock.producer.create.mockResolvedValue({ id: 1, ...producer });
 
-    expect(service.createProducer(producer)).not.toBeNull();
+    const result = await service.createProducer(producer);
+    expect(result).toEqual({ id: 1, ...producer });
+  });
+
+  it('should return a list of producers', async () => {
+    const producers = [
+      {
+        id: 1,
+        name: 'MGM',
+        biography: 'Sa vie, son oeuvre',
+      },
+      {
+        id: 2,
+        name: 'universal',
+        biography: 'Sa vie, son oeuvre',
+      },
+      {
+        id: 3,
+        name: 'Twentieth Century Fox',
+        biography: 'Sa vie, son oeuvre',
+      },
+    ];
+
+    prismaMock.producer.findMany.mockResolvedValue(producers);
+
+    expect(await service.getProducers()).toEqual([...producers]);
+  });
+
+  it("should get a producer's details", async () => {
+    const producer = {
+      id: 1,
+      name: 'MGM',
+      biography: 'Sa vie, son oeuvre',
+    };
+
+    prismaMock.producer.findUniqueOrThrow.mockResolvedValue(producer);
+
+    expect(await service.getProducer(1)).toEqual(producer);
+  });
+
+  it('Should fail getting a producer when not found', async () => {
+    prismaMock.producer.findUniqueOrThrow.mockRejectedValue({ code: 'P2025' });
+
+    await expect(async () => await service.getProducer(1)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
+
+  it('should update a producer', async () => {
+    const updateProducerDTO = {
+      name: 'MGM',
+    };
+
+    const updated = {
+      id: 1,
+      name: updateProducerDTO.name,
+      biography: 'Sa vie, son oeuvre',
+    };
+
+    prismaMock.producer.update.mockResolvedValue(updated);
+
+    await expect(service.updateProducer(1, updateProducerDTO)).resolves.toEqual(
+      { ...updated },
+    );
+  });
+
+  it('should fail updating a producer that is not found', async () => {
+    const updateProducerDTO = {
+      name: 'MGM',
+    };
+
+    prismaMock.producer.update.mockRejectedValue({ code: 'P2025' });
+
+    await expect(
+      async () => await service.updateProducer(1, updateProducerDTO),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it('should delete a producer', async () => {
+    const deleted = {
+      id: 1,
+      name: 'MGM',
+      biography: null,
+    };
+
+    prismaMock.producer.delete.mockResolvedValue(deleted);
+
+    expect(service.deleteProducer(1)).resolves.toEqual({ ...deleted });
+  });
+
+  it('should fail deleting a producer that is not found', async () => {
+    prismaMock.producer.delete.mockRejectedValue({ code: 'P2025' });
+
+    await expect(
+      async () => await service.deleteProducer(1),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it('should get movies of a producer', async () => {
+    const producer = {
+      id: 1,
+      name: 'MGM',
+      biography: 'Sa vie, son oeuvre'
+    };
+
+    const movies = [
+      {
+        id: 1,
+        title: 'movie1',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+      {
+        id: 2,
+        title: 'movie2',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+      {
+        id: 3,
+        title: 'movie3',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+    ];
+    
+    prismaMock.producer.findUniqueOrThrow.mockResolvedValue(producer);
+
+    prismaMock.movie.findMany.mockResolvedValue(movies);
+
+    const result = await service.getProducerMovies(1);
+
+    expect(prismaMock.movie.findMany).toHaveBeenCalled();
+    expect(result).toEqual(movies);
+  });
+
+  it('sould fail getting movies of a producer that is not found', async () => {
+    prismaMock.producer.findUniqueOrThrow.mockRejectedValue({ code: 'P2025' });
+
+    await expect(
+      async () => await service.getProducerMovies(1),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  /**
+   * directors
+   */
+
+  it('should create a director', async () => {
+    const director = {
+      name: 'Coppola',
+      biography: 'Sa vie, son oeuvre',
+    };
+
+    prismaMock.director.create.mockResolvedValue({ id: 1, ...director });
+
+    const result = await service.createDirector(director);
+    expect(result).toEqual({ id: 1, ...director });
+  });
+
+  it('should return a list of directors', async () => {
+    const directors = [
+      {
+        id: 1,
+        name: 'Coppola',
+        biography: 'Sa vie, son oeuvre',
+      },
+      {
+        id: 2,
+        name: 'Ridley Scott',
+        biography: 'Sa vie, son oeuvre',
+      },
+      {
+        id: 3,
+        name: 'Tod Browning',
+        biography: 'Sa vie, son oeuvre',
+      },
+    ];
+
+    prismaMock.director.findMany.mockResolvedValue(directors);
+
+    expect(await service.getDirectors()).toEqual([...directors]);
+  });
+
+  it("should get a director's details", async () => {
+    const director = {
+      id: 1,
+      name: 'Coppola',
+      biography: 'Sa vie, son oeuvre',
+    };
+
+    prismaMock.director.findUniqueOrThrow.mockResolvedValue(director);
+
+    expect(await service.getDirector(1)).toEqual(director);
+  });
+
+  it('Should fail getting a director when not found', async () => {
+    prismaMock.director.findUniqueOrThrow.mockRejectedValue({ code: 'P2025' });
+
+    await expect(async () => await service.getDirector(1)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
+
+  it('should update a director', async () => {
+    const updateDirectorDTO = {
+      name: 'Coppola',
+    };
+
+    const updated = {
+      id: 1,
+      name: updateDirectorDTO.name,
+      biography: 'Sa vie, son oeuvre',
+    };
+
+    prismaMock.director.update.mockResolvedValue(updated);
+
+    await expect(service.updateDirector(1, updateDirectorDTO)).resolves.toEqual(
+      { ...updated },
+    );
+  });
+
+  it('should fail director a producer that is not found', async () => {
+    const updateDirectorDTO = {
+      name: 'Coppola',
+    };
+
+    prismaMock.director.update.mockRejectedValue({ code: 'P2025' });
+
+    await expect(
+      async () => await service.updateDirector(1, updateDirectorDTO),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it('should delete a director', async () => {
+    const deleted = {
+      id: 1,
+      name: 'Coppola',
+      biography: null,
+    };
+
+    prismaMock.director.delete.mockResolvedValue(deleted);
+
+    expect(service.deleteDirector(1)).resolves.toEqual({ ...deleted });
+  });
+
+  it('should fail deleting a director that is not found', async () => {
+    prismaMock.director.delete.mockRejectedValue({ code: 'P2025' });
+
+    await expect(
+      async () => await service.deleteDirector(1),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it('should get movies of a director', async () => {
+    const director = {
+      id: 1,
+      name: 'Coppola',
+      biography: 'Sa vie, son oeuvre'
+    };
+
+    const movies = [
+      {
+        id: 1,
+        title: 'movie1',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+      {
+        id: 2,
+        title: 'movie2',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+      {
+        id: 3,
+        title: 'movie3',
+        releaseYear: 2023,
+        image: 'default.jpg',
+        producerId: 1,
+        directorId: 1,
+        shortSynopsis: null,
+        longSynopsis: null,
+        teamComment: null,
+      },
+    ];
+    
+    prismaMock.director.findUniqueOrThrow.mockResolvedValue(director);
+
+    prismaMock.movie.findMany.mockResolvedValue(movies);
+
+    const result = await service.getDirectorMovies(1);
+
+    expect(prismaMock.movie.findMany).toHaveBeenCalled();
+    expect(result).toEqual(movies);
+  });
+
+  it('sould fail getting movies of a director that is not found', async () => {
+    prismaMock.director.findUniqueOrThrow.mockRejectedValue({ code: 'P2025' });
+
+    await expect(
+      async () => await service.getDirectorMovies(1),
+    ).rejects.toThrow(NotFoundException);
   });
 });
