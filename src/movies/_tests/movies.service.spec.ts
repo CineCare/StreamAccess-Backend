@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from '../movies.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { handleErrorResponse } from '../../commons/utils/handleErrorResponse';
 import { UpdateMovieDTO } from '../DTO/movieUpdate.dto';
 import { PrismaClient } from '@prisma/client';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
@@ -68,7 +67,6 @@ describe('MoviesService', () => {
     ];
 
     prismaMock.movie.findMany.mockResolvedValueOnce(movies);
-    //jest.spyOn(prisma.movie, 'findMany').mockResolvedValue(movies);
 
     const result = await service.getList();
 
@@ -153,24 +151,8 @@ describe('MoviesService', () => {
       directorId: '1',
     };
 
-    const error = new Error('Test Error');
-    prismaMock.movie.create.mockRejectedValueOnce(error);
-
-    jest
-      .spyOn(
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        require('../../commons/utils/handleErrorResponse'),
-        'handleErrorResponse',
-      )
-      .mockImplementationOnce(() => {});
-
-    await service.create(createMovieDTO);
-
-    expect(handleErrorResponse).toHaveBeenCalledWith(
-      error,
-      'Le film',
-      createMovieDTO.title,
-    );
+    prismaMock.movie.create.mockRejectedValue({ code: 'P2002' });
+    await expect(service.create(createMovieDTO)).rejects.toThrow();
   });
 
   it.each([
@@ -327,6 +309,24 @@ describe('MoviesService', () => {
     expect(result).toEqual({ ...mockedResult });
   });
 
+  it('should delete a tag', async () => {
+    const tag = {
+      id: 1,
+      label: 'tag',
+    };
+    prismaMock.movieTag.delete.mockResolvedValue(tag);
+    const result = await service.deleteTag(1);
+    expect(result).toEqual({ ...tag });
+  });
+
+  it('should fail deleting a tag when not found', async () => {
+    prismaMock.movieTag.delete.mockRejectedValue({ code: 'P2025' });
+
+    expect(async () => await service.deleteTag(1)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
+
   it('should add tags to a movie', async () => {
     const movieId = 1;
     const movieTags = [{ id: 1 }, { id: 2 }, { id: 3 }];
@@ -399,5 +399,32 @@ describe('MoviesService', () => {
     expect(async () => await service.addTags(movieId, tagIds)).rejects.toThrow(
       NotFoundException,
     );
+  });
+
+  it('should remove tags from a movie', async () => {
+    const tagsIds = [1, 2, 3];
+
+    prismaMock.movieTag.count.mockResolvedValue(3);
+    prismaMock.movieTagMovie.deleteMany.mockResolvedValue({ count: 2 });
+
+    await expect(service.deleteMovieTagMovieList(1, tagsIds)).resolves.toEqual({
+      success: true,
+      deleted: 2,
+    });
+  });
+
+  /**
+   * producers
+   */
+
+  it('should create a producer', async () => {
+    const producer = {
+      name: 'Coppola',
+      biography: 'Sa vie, son oeuvre',
+    };
+
+    prismaMock.producer.create.mockResolvedValue({ id: 1, ...producer });
+
+    expect(service.createProducer(producer)).not.toBeNull();
   });
 });

@@ -95,7 +95,11 @@ export class MoviesService {
   }
 
   async deleteTag(id: number) {
-    return await this.prisma.movieTag.delete({ where: { id } });
+    try {
+      return await this.prisma.movieTag.delete({ where: { id } });
+    } catch (e) {
+      handleErrorResponse(e, 'tag', id.toString());
+    }
   }
 
   async checkTagIds(body: number[]) {
