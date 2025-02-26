@@ -18,14 +18,14 @@ describe('MailService', () => {
             secure: false,
             auth: {
               user: 'cinecare@codevert.org',
-              pass: 'Whitedog_hos44',
+              pass: 'secret',
             },
           },
           defaults: {
             from: '"No Reply - CineCare" <cinecare@codevert.org>',
           },
           template: {
-            dir: join(__dirname, 'templates'),
+            dir: join(__dirname, '../templates'),
             adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
             options: {
               strict: true,
@@ -42,5 +42,32 @@ describe('MailService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should send a registration mail', async () => {
+    expect(() =>
+      service.sendRegistrationRequest(
+        'backend unit tests',
+        'cinecare@codevert.org',
+      ),
+    ).not.toThrow();
+  });
+
+  it('should send a validation mail', async () => {
+    expect(() =>
+      service.sendAccountValidation(
+        'backend unit tests',
+        'cinecare@codevert.org',
+      ),
+    ).not.toThrow();
+  });
+
+  it('should send a rejection mail', async () => {
+    expect(() =>
+      service.sendAccountRejection(
+        'backend unit tests',
+        'cinecare@codevert.org',
+      ),
+    ).not.toThrow();
   });
 });

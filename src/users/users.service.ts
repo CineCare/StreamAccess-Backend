@@ -4,6 +4,7 @@ import { UserEntity } from './entities/user.entity';
 import { UpdateUserDTO } from './DTO/userUpdate.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserEntity } from './entities/updateUser.entity';
+import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
 
 //TODO set in .env
 export const roundsOfHashing = 10;
@@ -20,10 +21,19 @@ export class UsersService {
   }
 
   async getOne(id: number, additionnalFields?: object): Promise<UserEntity> {
-    return await this.prisma.user.findUniqueOrThrow({
-      where: { id: id },
-      select: { id: true, pseudo: true, isActive: true, ...additionnalFields },
-    });
+    try {
+      return await this.prisma.user.findUniqueOrThrow({
+        where: { id: id },
+        select: {
+          id: true,
+          pseudo: true,
+          isActive: true,
+          ...additionnalFields,
+        },
+      });
+    } catch (e) {
+      handleErrorResponse(e, 'movieId', id.toString());
+    }
   }
 
   async getCandidates() {

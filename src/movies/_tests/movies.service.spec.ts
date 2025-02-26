@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Test, TestingModule } from '@nestjs/testing';
-import { MoviesService } from '../movies.service';
-import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { UpdateMovieDTO } from '../DTO/movieUpdate.dto';
+import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateMovieDTO } from '../DTO/movieCreate.dto';
+import { UpdateMovieDTO } from '../DTO/movieUpdate.dto';
+import { MoviesService } from '../movies.service';
 
 describe('MoviesService', () => {
   let service: MoviesService;
@@ -101,8 +101,8 @@ describe('MoviesService', () => {
     expect(result).toEqual(movie);
   });
 
-  it('should throw NotFoundException when getting a movie that does not exist', async () => {
-    prismaMock.movie.findUniqueOrThrow.mockRejectedValueOnce({ code: 'P2025' });
+  it('should throw NotFoundException when getting a movie that do not exists', async () => {
+    prismaMock.movie.findUniqueOrThrow.mockRejectedValue({ code: 'P2025' });
 
     expect(async () => await service.getOne(1)).rejects.toThrow();
   });
