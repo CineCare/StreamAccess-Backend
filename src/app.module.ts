@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -8,7 +9,14 @@ import { MailModule } from './mail/mail.module';
 import { MoviesModule } from './movies/movies.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, MailModule, MoviesModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    PrismaModule,
+    MailModule,
+    MoviesModule,
+    ConfigModule.forRoot(),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
