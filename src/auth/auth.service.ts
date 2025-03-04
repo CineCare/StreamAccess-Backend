@@ -11,9 +11,6 @@ import { MailService } from '../mail/mail.service';
 import { LoginDTO } from './DTO/login.dto';
 import { RegisterDTO } from './DTO/register.dto';
 
-//TODO set in .env
-export const roundsOfHashing = 10;
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -39,7 +36,7 @@ export class AuthService {
 
   async register(body: RegisterDTO): Promise<AuthEntity> {
     const { pseudo, email, password } = body;
-    const hash = await bcrypt.hash(password, roundsOfHashing);
+    const hash = await bcrypt.hash(password, process.env.ROUNDS_OF_HASHING);
     const existingUser = await this.prisma.user.findFirst({
       where: { email },
     });

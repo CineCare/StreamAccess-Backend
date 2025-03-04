@@ -10,9 +10,6 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserEntity } from './entities/updateUser.entity';
 import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
 
-//TODO set in .env
-export const roundsOfHashing = 10;
-
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
@@ -71,7 +68,10 @@ export class UsersService {
           'Le nouveau mot de passe et la confirmation sont différents',
         );
       }
-      newData.password = await bcrypt.hash(data.newPassword, roundsOfHashing);
+      newData.password = await bcrypt.hash(
+        data.newPassword,
+        process.env.ROUNDS_OF_HASHING,
+      );
     }
     if (data.pseudo) {
       newData.pseudo = data.pseudo;

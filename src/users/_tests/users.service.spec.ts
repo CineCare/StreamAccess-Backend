@@ -126,7 +126,7 @@ describe('UsersService', () => {
 
     const result = await service.updateMe(1, data);
 
-    await expect(result).toEqual({
+    expect(result).toEqual({
       id: 1,
       pseudo: data.pseudo,
       email: 'admin@codevert.org',
