@@ -4,7 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UsersService } from '../users.service';
 import * as bcrypt from 'bcrypt';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let service: UsersService;
