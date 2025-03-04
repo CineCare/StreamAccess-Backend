@@ -15,7 +15,9 @@ import { MoviesModule } from './movies/movies.module';
     PrismaModule,
     MailModule,
     MoviesModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
