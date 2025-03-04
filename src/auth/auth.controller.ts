@@ -32,8 +32,11 @@ export class AuthController {
 
   @Post('register')
   @ApiOkResponse({ type: AuthEntity })
-  register(@Body() { pseudo, email, password }: RegisterDTO) {
-    return this.authService.register(pseudo, email, password);
+  register(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: RegisterDTO,
+  ) {
+    return this.authService.register(body);
   }
 
   @Post('validate')

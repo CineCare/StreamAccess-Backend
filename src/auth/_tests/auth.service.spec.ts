@@ -112,6 +112,18 @@ describe('AuthService', () => {
     ).rejects.toThrow();
   });
 
+  it('should not login with wrong user', async () => {
+    jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+    jest.spyOn(bcrypt, 'compare').mockImplementation(async () => false);
+    expect(
+      async () =>
+        await service.login({
+          email: 'test.login@gmail.com',
+          password: 'Whitedog44',
+        }),
+    ).rejects.toThrow();
+  });
+
   it('should register', async () => {
     const data = {
       pseudo: 'test',
@@ -132,11 +144,7 @@ describe('AuthService', () => {
       .spyOn(mailService, 'sendRegistrationRequest')
       .mockImplementation(() => null);
     jest.spyOn(service['jwtService'], 'sign').mockReturnValue('mockToken');
-    const result = await service.register(
-      data.pseudo,
-      data.email,
-      data.password,
-    );
+    const result = await service.register(data);
     expect(result).toBeDefined();
     expect(result.accessToken).toBeDefined();
   });
@@ -158,8 +166,7 @@ describe('AuthService', () => {
     };
 
     jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(mockUser);
-    const result = async () =>
-      await service.register(data.pseudo, data.email, data.password);
+    const result = async () => await service.register(data);
     expect(result).rejects.toThrow();
     try {
       await result();

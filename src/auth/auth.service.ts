@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuthEntity } from './entities/auth.entity';
 import { MailService } from '../mail/mail.service';
 import { LoginDTO } from './DTO/login.dto';
+import { RegisterDTO } from './DTO/register.dto';
 
 //TODO set in .env
 export const roundsOfHashing = 10;
@@ -36,13 +37,12 @@ export class AuthService {
     };
   }
 
-  async register(
-    pseudo: string,
-    email: string,
-    password: string,
-  ): Promise<AuthEntity> {
+  async register(body: RegisterDTO): Promise<AuthEntity> {
+    const { pseudo, email, password } = body;
     const hash = await bcrypt.hash(password, roundsOfHashing);
-    const existingUser = await this.prisma.user.findFirst({ where: { email } });
+    const existingUser = await this.prisma.user.findFirst({
+      where: { email },
+    });
     if (existingUser) {
       throw new BadRequestException('email ou mot de passe invalide');
     }

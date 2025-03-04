@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDTO } from './DTO/userUpdate.dto';
@@ -46,14 +50,15 @@ export class UsersService {
   async updateMe(id: number, data: UpdateUserDTO): Promise<UserEntity> {
     const newData: UpdateUserEntity = {};
     if (data.actualPassword) {
-      const crypt = await bcrypt.hash(data.actualPassword, roundsOfHashing);
-      const storedCrypt = (
-        await this.prisma.user.findUnique({
-          where: { id },
-          select: { password: true },
-        })
-      ).password;
-      if (await bcrypt.compare(crypt, storedCrypt)) {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+        select: { password: true },
+      });
+      if (!user) {
+        throw new NotFoundException('user not found');
+      }
+      const compare = await bcrypt.compare(data.actualPassword, user.password);
+      if (!compare) {
         throw new BadRequestException('Le mot de passe actuel est invalide');
       }
       if (!data.newPassword || !data.newPasswordConfirm) {
