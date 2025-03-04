@@ -36,7 +36,10 @@ export class AuthService {
 
   async register(body: RegisterDTO): Promise<AuthEntity> {
     const { pseudo, email, password } = body;
-    const hash = await bcrypt.hash(password, process.env.ROUNDS_OF_HASHING);
+    const hash = await bcrypt.hash(
+      password,
+      parseInt(process.env.ROUNDS_OF_HASHING),
+    );
     const existingUser = await this.prisma.user.findFirst({
       where: { email },
     });

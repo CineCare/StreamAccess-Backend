@@ -70,7 +70,7 @@ export class UsersService {
       }
       newData.password = await bcrypt.hash(
         data.newPassword,
-        process.env.ROUNDS_OF_HASHING,
+        parseInt(process.env.ROUNDS_OF_HASHING),
       );
     }
     if (data.pseudo) {
