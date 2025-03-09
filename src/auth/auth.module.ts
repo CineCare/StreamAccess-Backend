@@ -10,7 +10,7 @@ import { AdminStrategy } from './strategy/admin.strategy';
 import { MailModule } from '../mail/mail.module';
 
 //TODO set in .env
-export const jwtSecret = 'super_secret_password';
+export const jwtSecret = process.env.JWT_SECRET;
 
 @Module({
   imports: [
