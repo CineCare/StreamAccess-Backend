@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
 import { AuthService } from '../auth.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -23,9 +22,6 @@ describe('AuthService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-        }),
         PassportModule,
         JwtModule.register({
           secret: jwtSecret,

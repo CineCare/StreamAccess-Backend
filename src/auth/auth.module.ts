@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
@@ -11,13 +10,10 @@ import { AdminStrategy } from './strategy/admin.strategy';
 import { MailModule } from '../mail/mail.module';
 
 //TODO set in .env
-export const jwtSecret = process.env.JWT_SECRET;
+export const jwtSecret = process.env.JWT_SECRET.toString();
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     PrismaModule,
     PassportModule,
     JwtModule.register({
