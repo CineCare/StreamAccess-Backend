@@ -10,10 +10,8 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { castNumParam } from '../commons/utils/castNumParam';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateMovieDTO } from './DTO/movieCreate.dto';
@@ -25,6 +23,14 @@ import { editFileName } from '../commons/utils/fileUpload';
 import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
 import { CreateProducerDTO } from './DTO/producerCreate.dto';
 import { CreateDirectorDTO } from './DTO/directorCreateDTO';
+import { ParseQueryIdPipe } from '../commons/validationPipes/parseQueryId.pipe';
+import { bodyValidationPipe } from '../commons/validationPipes/bodyValidation.pipe';
+import { idListValidationPipe } from '../commons/validationPipes/IdListValidation.pipe';
+
+const movieIdValidationPipe = new ParseQueryIdPipe('Movie');
+const tagIdValidationPipe = new ParseQueryIdPipe('Tag');
+const producerIdValidationPipe = new ParseQueryIdPipe('Producer');
+const directorIdValidationPipe = new ParseQueryIdPipe('Director');
 
 @Controller('movies')
 @ApiTags('movies')
@@ -76,8 +82,11 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  getOne(@Param('id') id: string) {
-    return this.moviesService.getOne(castNumParam('id', id));
+  getOne(
+    @Param('id', movieIdValidationPipe)
+    id: number,
+  ) {
+    return this.moviesService.getOne(id);
   }
 
   @Post('')
@@ -96,14 +105,7 @@ export class MoviesController {
     }),
   )
   create(
-    @Body(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        skipMissingProperties: true,
-      }),
-    )
-    body: CreateMovieDTO,
+    @Body(bodyValidationPipe) body: CreateMovieDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
     body.image = file ? file.filename : undefined;
@@ -123,12 +125,12 @@ export class MoviesController {
     }),
   )
   update(
-    @Param('id') id: string,
-    @Body() body: UpdateMovieDTO,
+    @Param('id', movieIdValidationPipe) id: number,
+    @Body(bodyValidationPipe) body: UpdateMovieDTO,
     @UploadedFile() file,
   ) {
     body.image = file ? file.filename : undefined;
-    return this.moviesService.update(castNumParam('id', id), body);
+    return this.moviesService.update(id, body);
   }
 
   @Delete(':id')
@@ -136,8 +138,8 @@ export class MoviesController {
   @ApiBearerAuth()
   @HttpCode(204)
   @UseGuards(AdminAuthGuard)
-  delete(@Param('id') id: string) {
-    return this.moviesService.delete(castNumParam('id', id));
+  delete(@Param('id', movieIdValidationPipe) id: number) {
+    return this.moviesService.delete(id);
   }
 
   /**
@@ -150,7 +152,7 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  createTag(@Body() body: CreateMovieTagDTO) {
+  createTag(@Body(bodyValidationPipe) body: CreateMovieTagDTO) {
     return this.moviesService.createTag(body);
   }
 
@@ -159,34 +161,37 @@ export class MoviesController {
   @ApiBearerAuth()
   @HttpCode(204)
   @UseGuards(AdminAuthGuard)
-  deleteTag(@Param('id') id: string) {
-    return this.moviesService.deleteTag(castNumParam('id', id));
+  deleteTag(@Param('id', tagIdValidationPipe) id: number) {
+    return this.moviesService.deleteTag(id);
   }
 
   @Post(':id/tags')
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  addTags(@Param('id') id: string, @Body() body: number[]) {
-    return this.moviesService.addTags(castNumParam('movie id', id), body);
+  addTags(
+    @Param('id', movieIdValidationPipe) id: number,
+    @Body(idListValidationPipe) body: number[],
+  ) {
+    return this.moviesService.addTags(id, body);
   }
 
   @Get(':id/tags')
   @ApiOkResponse()
   @ApiBearerAuth()
-  getMovieTags(@Param('id') id: string) {
-    return this.moviesService.getMovieTags(castNumParam('movie id', id));
+  getMovieTags(@Param('id', movieIdValidationPipe) id: number) {
+    return this.moviesService.getMovieTags(id);
   }
 
   @Delete(':id/tags')
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  deleteMovieTags(@Param('id') id: string, @Body() body: number[]) {
-    return this.moviesService.deleteMovieTagMovieList(
-      castNumParam('movie id', id),
-      body,
-    );
+  deleteMovieTags(
+    @Param('id', movieIdValidationPipe) id: number,
+    @Body(idListValidationPipe) body: number[],
+  ) {
+    return this.moviesService.deleteMovieTagMovieList(id, body);
   }
 
   /**
@@ -199,38 +204,41 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  createProducer(@Body() body: CreateProducerDTO) {
+  createProducer(@Body(bodyValidationPipe) body: CreateProducerDTO) {
     return this.moviesService.createProducer(body);
   }
 
   @Get('producer/:id')
   @ApiOkResponse()
   @ApiBearerAuth()
-  getProducer(@Param('id') id: string) {
-    return this.moviesService.getProducer(castNumParam('id', id));
+  getProducer(@Param('id', producerIdValidationPipe) id: number) {
+    return this.moviesService.getProducer(id);
   }
 
   @Put('producer/:id')
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  updateProducer(@Param('id') id: string, @Body() body: CreateProducerDTO) {
-    return this.moviesService.updateProducer(castNumParam('id', id), body);
+  updateProducer(
+    @Param('id', producerIdValidationPipe) id: number,
+    @Body() body: CreateProducerDTO,
+  ) {
+    return this.moviesService.updateProducer(id, body);
   }
 
   @Delete('producer/:id')
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  deleteProducer(@Param('id') id: string) {
-    return this.moviesService.deleteProducer(castNumParam('id', id));
+  deleteProducer(@Param('id', producerIdValidationPipe) id: number) {
+    return this.moviesService.deleteProducer(id);
   }
 
   @Get('producer/:id/movies')
   @ApiOkResponse()
   @ApiBearerAuth()
-  getProducerFilms(@Param('id') id: string) {
-    return this.moviesService.getProducerMovies(castNumParam('id', id));
+  getProducerFilms(@Param('id', producerIdValidationPipe) id: number) {
+    return this.moviesService.getProducerMovies(id);
   }
 
   /**
@@ -243,37 +251,40 @@ export class MoviesController {
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  createDirector(@Body(new ValidationPipe()) body: CreateDirectorDTO) {
+  createDirector(@Body(bodyValidationPipe) body: CreateDirectorDTO) {
     return this.moviesService.createDirector(body);
   }
 
   @Get('director/:id')
   @ApiOkResponse()
   @ApiBearerAuth()
-  getDirector(@Param('id') id: string) {
-    return this.moviesService.getDirector(castNumParam('id', id));
+  getDirector(@Param('id', directorIdValidationPipe) id: number) {
+    return this.moviesService.getDirector(id);
   }
 
   @Put('director/:id')
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  updateDirector(@Param('id') id: string, @Body() body: CreateDirectorDTO) {
-    return this.moviesService.updateDirector(castNumParam('id', id), body);
+  updateDirector(
+    @Param('id', directorIdValidationPipe) id: number,
+    @Body(bodyValidationPipe) body: CreateDirectorDTO,
+  ) {
+    return this.moviesService.updateDirector(id, body);
   }
 
   @Delete('director/:id')
   @ApiOkResponse()
   @ApiBearerAuth()
   @UseGuards(AdminAuthGuard)
-  deleteDirector(@Param('id') id: string) {
-    return this.moviesService.deleteDirector(castNumParam('id', id));
+  deleteDirector(@Param('id', directorIdValidationPipe) id: number) {
+    return this.moviesService.deleteDirector(id);
   }
 
   @Get('director/:id/movies')
   @ApiOkResponse()
   @ApiBearerAuth()
-  getDirectorFilms(@Param('id') id: string) {
-    return this.moviesService.getDirectorMovies(castNumParam('id', id));
+  getDirectorFilms(@Param('id', directorIdValidationPipe) id: number) {
+    return this.moviesService.getDirectorMovies(id);
   }
 }
