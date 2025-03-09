@@ -23,8 +23,11 @@ import { UserEntity } from './entities/user.entity';
 import { MineUserEntity } from './entities/mineUser.etity';
 import { CandidateEntity } from './entities/candidate.entity';
 import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
-import { castNumParam } from '../commons/utils/castNumParam';
 import { UpdateUserDTO } from './DTO/userUpdate.dto';
+import { bodyValidationPipe } from '../commons/validationPipes/bodyValidation.pipe';
+import { ParseQueryIdPipe } from '../commons/validationPipes/parseQueryId.pipe';
+
+const userValidationPipe = new ParseQueryIdPipe('user');
 
 @Controller('users')
 @ApiTags('users')
@@ -65,7 +68,7 @@ export class UsersController {
   @ApiBearerAuth()
   async updateMe(
     @Request() req,
-    @Body() body: UpdateUserDTO,
+    @Body(bodyValidationPipe) body: UpdateUserDTO,
   ): Promise<UserEntity> {
     return await this.usersService.updateMe(req.user.id, body);
   }
@@ -76,9 +79,11 @@ export class UsersController {
   @ApiBadRequestResponse({ type: BadRequestException })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  async getOne(@Param('id') id: string): Promise<UserEntity> {
+  async getOne(
+    @Param('id', userValidationPipe) id: number,
+  ): Promise<UserEntity> {
     try {
-      return await this.usersService.getOne(castNumParam('id', id));
+      return await this.usersService.getOne(id);
     } catch (e) {
       handleErrorResponse(e, 'id', id);
     }

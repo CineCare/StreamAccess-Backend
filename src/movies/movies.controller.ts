@@ -22,7 +22,7 @@ import { diskStorage } from 'multer';
 import { editFileName } from '../commons/utils/fileUpload';
 import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
 import { CreateProducerDTO } from './DTO/producerCreate.dto';
-import { CreateDirectorDTO } from './DTO/directorCreateDTO';
+import { CreateDirectorDTO } from './DTO/directorCreate.dto';
 import { ParseQueryIdPipe } from '../commons/validationPipes/parseQueryId.pipe';
 import { bodyValidationPipe } from '../commons/validationPipes/bodyValidation.pipe';
 import { idListValidationPipe } from '../commons/validationPipes/IdListValidation.pipe';

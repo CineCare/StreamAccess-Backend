@@ -8,7 +8,7 @@ import { CreateProducerDTO } from './DTO/producerCreate.dto';
 import { UpdateMovieEntity } from './entities/movieUpdate.entity';
 import { castNumParam } from '../commons/utils/castNumParam';
 import { CreateMovieEntity } from './entities/movieCreate.entity';
-import { CreateDirectorDTO } from './DTO/directorCreateDTO';
+import { CreateDirectorDTO } from './DTO/directorCreate.dto';
 
 @Injectable()
 export class MoviesService {

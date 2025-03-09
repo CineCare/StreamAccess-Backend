@@ -22,6 +22,7 @@ export class RegisterDTO {
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
+  // NOSONR
   @Matches(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,16}$/gm, {
     message: 'Mot de passe trop faible',
   })

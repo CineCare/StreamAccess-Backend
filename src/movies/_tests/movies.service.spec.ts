@@ -148,6 +148,15 @@ describe('MoviesService', () => {
     expect(result).toEqual(createdMovie);
   });
 
+  it('should fail creating a movie with non number releaseYear', async () => {
+    const movieDTO = {
+      title: 'Test Movie',
+      releaseYear: 'wrong',
+    }
+
+    await expect(service.create(movieDTO)).rejects.toThrow();
+  })
+
   it('should handle error response if failed creating a movie', async () => {
     const createMovieDTO: CreateMovieDTO = {
       title: 'Test Movie',
@@ -224,6 +233,16 @@ describe('MoviesService', () => {
 
     await expect(service.update(127, updateMovieDTO)).rejects.toThrow();
   });
+
+  it('should fail updating a movie with wrong producer or director id', async () => {
+    const updateMovieDTO: UpdateMovieDTO = {
+      directorId: '1',
+    }
+
+    prismaMock.movie.update.mockRejectedValue({ code: 'P2003',  meta: {field_name: 'directorId'}});
+
+    await expect(service.update(127, updateMovieDTO)).rejects.toThrow('Wrong value for director');
+  })
 
   it('should delete a movie', async () => {
     const deletedMovie = {
