@@ -9,8 +9,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { AdminStrategy } from './strategy/admin.strategy';
 import { MailModule } from '../mail/mail.module';
 
-//TODO set in .env
-export const jwtSecret = process.env.JWT_SECRET;
+export const jwtSecret = 'super_secret_password';
 
 @Module({
   imports: [
