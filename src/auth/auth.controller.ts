@@ -4,9 +4,9 @@ import {
   Post,
   Query,
   UseGuards,
-  BadRequestException,
   HttpCode,
   ValidationPipe,
+  ParseArrayPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -43,13 +43,10 @@ export class AuthController {
   @ApiOkResponse()
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
-  validate(@Query() query) {
-    let ids: number[];
-    try {
-      ids = JSON.parse(`[${query.ids}]`);
-    } catch {
-      throw new BadRequestException('invalid Id array');
-    }
+  validate(
+    @Query('ids', new ParseArrayPipe({ items: Number, separator: ',' }))
+    ids: number[],
+  ) {
     return this.authService.validate(ids);
   }
 
@@ -57,13 +54,10 @@ export class AuthController {
   @ApiOkResponse()
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
-  reject(@Query() query) {
-    let ids: number[];
-    try {
-      ids = JSON.parse(query.ids);
-    } catch {
-      throw new BadRequestException('invalid Id array');
-    }
+  reject(
+    @Query('ids', new ParseArrayPipe({ items: Number, separator: ',' }))
+    ids: number[],
+  ) {
     return this.authService.reject(ids);
   }
 }
