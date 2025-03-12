@@ -15,7 +15,16 @@ export class MoviesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getList() {
-    return await this.prisma.movie.findMany();
+    const response = await this.prisma.movie.findMany({
+      include: { tags: { select: { tag: { select: { label: true } } } } },
+    });
+
+    return response.map((cinema) => {
+      return {
+        ...cinema,
+        tags: cinema.tags.map((movieTag) => movieTag.tag.label),
+      };
+    });
   }
 
   async getOne(id: number) {
