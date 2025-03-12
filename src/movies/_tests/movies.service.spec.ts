@@ -23,6 +23,7 @@ describe('MoviesService', () => {
       shortSynopsis: null,
       longSynopsis: null,
       teamComment: null,
+      tags: []
     },
     {
       id: 2,
@@ -34,6 +35,7 @@ describe('MoviesService', () => {
       shortSynopsis: null,
       longSynopsis: null,
       teamComment: null,
+      tags: []
     },
     {
       id: 3,
@@ -45,6 +47,7 @@ describe('MoviesService', () => {
       shortSynopsis: null,
       longSynopsis: null,
       teamComment: null,
+      tags: []
     },
   ];
 
