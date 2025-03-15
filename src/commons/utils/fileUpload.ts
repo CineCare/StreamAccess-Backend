@@ -17,7 +17,6 @@ export const editFileName = async (req, file, callback) => {
       const moviesSevice = new MoviesService(new PrismaService());
       movieTitle = (await moviesSevice.getOne(movieId)).title;
     } catch (e) {
-      //callback(null, false);
       return callback(e, false);
     }
   } else {

@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail/mail.module';
 import { MoviesModule } from './movies/movies.module';
+import { StreamsModule } from './streams/streams.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MoviesModule } from './movies/movies.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    StreamsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

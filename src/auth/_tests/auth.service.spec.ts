@@ -19,7 +19,7 @@ describe('AuthService', () => {
   let prisma: DeepMockProxy<PrismaClient>;
   let mailService: MailService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         PassportModule,
