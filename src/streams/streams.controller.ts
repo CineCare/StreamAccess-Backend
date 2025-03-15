@@ -23,7 +23,7 @@ export class StreamsController {
   @Header('Content-Type', 'video/mp4')
   getStream(@Headers() headers, @Res() res: Response) {
     this.logger.log('stream begins');
-    const videoPath = `./assets/movies_streams/Freaks_La_Monstrueuse_Parade_1932_VOSTFR.mp4`;
+    const videoPath = `/usr/src/app/assets/movies_streams/Freaks_La_Monstrueuse_Parade_1932_VOSTFR.mp4`;
     const { size } = statSync(videoPath);
     const videoRange = headers.range;
     if (videoRange) {
