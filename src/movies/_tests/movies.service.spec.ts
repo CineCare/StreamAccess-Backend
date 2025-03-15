@@ -23,7 +23,20 @@ describe('MoviesService', () => {
       shortSynopsis: null,
       longSynopsis: null,
       teamComment: null,
-      tags: []
+      tags: [
+        {
+          tag: {
+            id: 1,
+            label: 'tag1',
+          }
+        },
+        {
+          tag: {
+            id: 2,
+            label: 'tag2',
+          }
+        },
+      ]
     },
     {
       id: 2,
@@ -51,7 +64,7 @@ describe('MoviesService', () => {
     },
   ];
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     prismaMock = mockDeep<PrismaClient>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -79,7 +92,12 @@ describe('MoviesService', () => {
     const result = await service.getList();
 
     expect(prismaMock.movie.findMany).toHaveBeenCalled();
-    expect(result).toEqual(movies);
+    expect(result).toEqual(movies.map((cinema) => {
+      return {
+        ...cinema,
+        tags: cinema.tags.map((movieTag) => movieTag.tag.label),
+      };
+    }));
   });
 
   it('should return a movie', async () => {
