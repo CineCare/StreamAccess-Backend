@@ -8,7 +8,7 @@ const sanitize = require('sanitize-filename');
 export const editFileName = async (req, file, callback) => {
   let movieTitle = '';
 
-  if (req.route.stack[0].method === 'put') {
+  if (req.route.stack[0].method === 'put' && !req.body.title) {
     try {
       const movieId = castNumParam(
         'movieId',
