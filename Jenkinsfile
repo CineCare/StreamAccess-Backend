@@ -93,21 +93,24 @@ pipeline {
         }
 
         stage('build & push docker image') {
-            when {
-                expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
-            }
-            steps {
-                //copy .env file from jenkins credentials to current workspace
-                withCredentials([file(credentialsId: "${ENV_ID}", variable: 'envFile')]){
-                    sh 'cp $envFile $WORKSPACE'
-                }
-                //connect to docker hub, build image and push to registry
-                sh '''
-                    echo $DOCKER_CREDENTIALS_PSW | docker login localhost:5000 -u $DOCKER_CREDENTIALS_USR --password-stdin
-                    docker build -t "localhost:5000/streamaccess:backend_${DOCKER_TAG}" .
-                    docker push localhost:5000/streamaccess:backend_${DOCKER_TAG}
-                '''
-            }
+            // when {
+            //     expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
+            // }
+            // steps {
+            //     //copy .env file from jenkins credentials to current workspace
+            //     withCredentials([file(credentialsId: "${ENV_ID}", variable: 'envFile')]){
+            //         sh 'cp $envFile $WORKSPACE'
+            //     }
+            //     //connect to docker hub, build image and push to registry
+            //     sh '''
+            //         echo $DOCKER_CREDENTIALS_PSW | docker login localhost:5000 -u $DOCKER_CREDENTIALS_USR --password-stdin
+            //         docker build -t "localhost:5000/streamaccess:backend_${DOCKER_TAG}" .
+            //         docker push localhost:5000/streamaccess:backend_${DOCKER_TAG}
+            //     '''
+            // }
+            sh '''
+                echo 'only testing for now'
+            '''
         }
 
         stage('Update stack portainer') {
@@ -116,13 +119,13 @@ pipeline {
             }
             steps {
                 //stop and restart portainer stack via api
-                withCredentials([string(credentialsId: 'portainer_token', variable: 'TOKEN')]) { //set SECRET with the credential content
-                    sh '''
-                        curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/stop?endpointId=2 &&
-                        curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/start?endpointId=2
-                    '''
-                }
-                error('test')
+                // withCredentials([string(credentialsId: 'portainer_token', variable: 'TOKEN')]) { //set SECRET with the credential content
+                //     sh '''
+                //         curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/stop?endpointId=2 &&
+                //         curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/start?endpointId=2
+                //     '''
+                // }
+                unstable('test')
             }
         }
     }
@@ -149,7 +152,7 @@ pipeline {
                     smiley = "😭"
                 }
                 sh 'echo ${GIT_COMMIT_MSG}'
-                discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} ${messageResult} ! ☹️\n\ngit commit message :\n${GIT_COMMIT_MSG}",
+                discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} ${messageResult} ! ${smiley}\n\ngit commit message :\n${GIT_COMMIT_MSG}",
                 footer: "${footer}",
                 link: "$BUILD_URL",
                 result: currentBuild.currentResult,
