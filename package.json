@@ -101,7 +101,8 @@
       ".*\\.entity\\.ts$",
       ".*\\_tests\\.*",
       ".*\\.e2e-spec\\.ts$",
-      "./main.ts"
+      "./main.ts",
+      ".*\\events\\.*"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",

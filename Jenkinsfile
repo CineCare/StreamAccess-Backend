@@ -127,18 +127,28 @@ pipeline {
     }
 
     post {
-        regression {
+        changed {
+            def messageResult = "is unknown"
+            def footer = "What happened ?"
+            def smiley = "🤔"
+            if (currentBuild.currentResult == 'success') {
+                messageResult = "succeed"
+                footer = "Good job !"
+                smiley = "😎"
+            }
+            if (currentBuild.currentResult == 'unstable') {
+                messageResult = "is unstable"
+                footer = "Let's make it cleaner !"
+                smiley = "🫤"
+            }
+            if (currentBuild.currentResult == 'failure') {
+                messageResult = "failed"
+                footer = "Better luck next try ?"
+                smiley = "😭"
+            }
             sh 'echo ${GIT_COMMIT_MSG}'
-            discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} failed ! ☹️\n\ngit commit message :\n${GIT_COMMIT_MSG}",
+            discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} ${messageResult} ! ☹️\n\ngit commit message :\n${GIT_COMMIT_MSG}",
             footer: "Better luck next try ?",
-            link: "$BUILD_URL",
-            result: currentBuild.currentResult,
-            title: JOB_NAME,
-            webhookURL: "${DISCORD_WEBHOOK}"
-        }
-        fixed {
-            discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} succeed ! 😎\n\ngit commit message :\n${GIT_COMMIT_MSG}",
-            footer: "Good job !",
             link: "$BUILD_URL",
             result: currentBuild.currentResult,
             title: JOB_NAME,
