@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail/mail.module';
 import { MoviesModule } from './movies/movies.module';
 import { StreamsModule } from './streams/streams.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { StreamsModule } from './streams/streams.module';
       isGlobal: true,
     }),
     StreamsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
