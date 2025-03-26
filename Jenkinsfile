@@ -108,7 +108,7 @@ pipeline {
             //         docker push localhost:5000/streamaccess:backend_${DOCKER_TAG}
             //     '''
             // }
-            script {
+            steps {
                 echo 'only testing for now'
             }
         }
