@@ -122,6 +122,7 @@ pipeline {
                         curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/start?endpointId=2
                     '''
                 }
+                unstable('test')
             }
         }
     }
@@ -132,17 +133,22 @@ pipeline {
                 def messageResult = "is unknown"
                 def footer = "What happened ?"
                 def smiley = "🤔"
+                if (currentBuild.currentResult == 'SUCCESS') {
+                    messageResult = "succeed"
+                    footer = "Good job !"
+                    smiley = "😎"
+                }
                 if (currentBuild.currentResult == 'success') {
                     messageResult = "succeed"
                     footer = "Good job !"
                     smiley = "😎"
                 }
-                if (currentBuild.currentResult == 'unstable') {
+                if (currentBuild.currentResult == 'UNSTABLE') {
                     messageResult = "is unstable"
                     footer = "Let's make it cleaner !"
                     smiley = "🫤"
                 }
-                if (currentBuild.currentResult == 'failure') {
+                if (currentBuild.currentResult == 'FAILURE') {
                     messageResult = "failed"
                     footer = "Better luck next try ?"
                     smiley = "😭"
