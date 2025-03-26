@@ -122,7 +122,7 @@ pipeline {
                         curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/start?endpointId=2
                     '''
                 }
-                unstable('test')
+                error('test')
             }
         }
     }
@@ -134,11 +134,6 @@ pipeline {
                 def footer = "What happened ?"
                 def smiley = "🤔"
                 if (currentBuild.currentResult == 'SUCCESS') {
-                    messageResult = "succeed"
-                    footer = "Good job !"
-                    smiley = "😎"
-                }
-                if (currentBuild.currentResult == 'success') {
                     messageResult = "succeed"
                     footer = "Good job !"
                     smiley = "😎"
@@ -155,7 +150,7 @@ pipeline {
                 }
                 sh 'echo ${GIT_COMMIT_MSG}'
                 discordSend description: "Jenkins Pipeline Build for StreamAccess-Backend ${BRANCH_NAME} ${messageResult} ! ☹️\n\ngit commit message :\n${GIT_COMMIT_MSG}",
-                footer: "Better luck next try ?",
+                footer: "${footer}",
                 link: "$BUILD_URL",
                 result: currentBuild.currentResult,
                 title: JOB_NAME,
