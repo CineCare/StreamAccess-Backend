@@ -93,23 +93,20 @@ pipeline {
         }
 
         stage('build & push docker image') {
-            // when {
-            //     expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
-            // }
-            // steps {
-            //     //copy .env file from jenkins credentials to current workspace
-            //     withCredentials([file(credentialsId: "${ENV_ID}", variable: 'envFile')]){
-            //         sh 'cp $envFile $WORKSPACE'
-            //     }
-            //     //connect to docker hub, build image and push to registry
-            //     sh '''
-            //         echo $DOCKER_CREDENTIALS_PSW | docker login localhost:5000 -u $DOCKER_CREDENTIALS_USR --password-stdin
-            //         docker build -t "localhost:5000/streamaccess:backend_${DOCKER_TAG}" .
-            //         docker push localhost:5000/streamaccess:backend_${DOCKER_TAG}
-            //     '''
-            // }
+            when {
+                expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
+            }
             steps {
-                echo 'only testing for now'
+                //copy .env file from jenkins credentials to current workspace
+                withCredentials([file(credentialsId: "${ENV_ID}", variable: 'envFile')]){
+                    sh 'cp $envFile $WORKSPACE'
+                }
+                //connect to docker hub, build image and push to registry
+                sh '''
+                    echo $DOCKER_CREDENTIALS_PSW | docker login localhost:5000 -u $DOCKER_CREDENTIALS_USR --password-stdin
+                    docker build -t "localhost:5000/streamaccess:backend_${DOCKER_TAG}" .
+                    docker push localhost:5000/streamaccess:backend_${DOCKER_TAG}
+                '''
             }
         }
 
@@ -119,13 +116,12 @@ pipeline {
             }
             steps {
                 //stop and restart portainer stack via api
-                // withCredentials([string(credentialsId: 'portainer_token', variable: 'TOKEN')]) { //set SECRET with the credential content
-                //     sh '''
-                //         curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/stop?endpointId=2 &&
-                //         curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/start?endpointId=2
-                //     '''
-                // }
-                error('test')
+                withCredentials([string(credentialsId: 'portainer_token', variable: 'TOKEN')]) { //set SECRET with the credential content
+                    sh '''
+                        curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/stop?endpointId=2 &&
+                        curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/start?endpointId=2
+                    '''
+                }
             }
         }
     }
@@ -159,7 +155,6 @@ pipeline {
                 title: JOB_NAME,
                 webhookURL: "${DISCORD_WEBHOOK}"
             }
-            
         }
     }
 }
