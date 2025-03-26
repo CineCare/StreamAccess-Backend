@@ -128,7 +128,7 @@ pipeline {
 
     post {
         changed {
-            steps {
+            script {
                 def messageResult = "is unknown"
                 def footer = "What happened ?"
                 def smiley = "🤔"
