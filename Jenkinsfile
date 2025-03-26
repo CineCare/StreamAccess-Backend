@@ -125,7 +125,7 @@ pipeline {
                 //         curl -X POST -H "X-API-Key: ${TOKEN}" https://portainer.codevert.org/api/stacks/7/start?endpointId=2
                 //     '''
                 // }
-                unstable('test')
+                error('test')
             }
         }
     }
