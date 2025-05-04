@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class PrefDTO {
+export class PrefTypeDTO {
   @IsNotEmpty()
   @ApiProperty()
-  name: string;
+  prefName: string;
 
-  @ApiProperty()
   @IsNotEmpty()
-  value: string;
+  @ApiProperty()
+  dataType: string;
 }

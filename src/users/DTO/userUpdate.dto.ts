@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { PrefDTO } from './pref.dto';
 
 export class UpdateUserDTO {
   @IsNotEmpty()
@@ -17,4 +18,8 @@ export class UpdateUserDTO {
   @IsNotEmpty()
   @ApiProperty()
   newPasswordConfirm?: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  prefs?: PrefDTO[];
 }

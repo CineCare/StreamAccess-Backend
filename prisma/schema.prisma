@@ -26,17 +26,16 @@ model User {
 
 model Prefs {
   id Int @id @default(autoincrement())
-  name String
   userId Int
-  theme String?
-  images Boolean?
-  audioDescription Boolean?
-  subtitles Boolean?
-  highContrast Boolean?
-  playRateControl Boolean?
-  contentSummary Boolean?
-  simplifiedExplanation Boolean?
+  name String
+  value String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PrefType {
+  id Int @id @default(autoincrement())
+  prefName String @unique
+  dataType String
 }
 
 model Movie {

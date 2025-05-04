@@ -19,6 +19,7 @@ export class AdminStrategy extends PassportStrategy(Strategy, 'admin') {
       process.env.ADMIN_EMAIL,
       'mr.tirmoatsu@gmail.com',
       'lokkotarakun@gmail.com',
+      'christ6565@free.fr',
     ];
     const user = await this.userService.getOne(payload.userId, { email: true });
     if (!user || !adminList.includes(user.email)) {

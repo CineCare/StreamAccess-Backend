@@ -8,6 +8,7 @@ import {
   UseGuards,
   Request,
   Body,
+  Post,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -26,6 +27,8 @@ import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
 import { UpdateUserDTO } from './DTO/userUpdate.dto';
 import { bodyValidationPipe } from '../commons/validationPipes/bodyValidation.pipe';
 import { ParseQueryIdPipe } from '../commons/validationPipes/parseQueryId.pipe';
+import { PrefTypeDTO } from './DTO/prefType.dto';
+import { PrefType } from '@prisma/client';
 
 const userValidationPipe = new ParseQueryIdPipe('user');
 
@@ -87,5 +90,15 @@ export class UsersController {
     } catch (e) {
       handleErrorResponse(e, 'id', id);
     }
+  }
+
+  @Post('prefType')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  async postPrefType(
+    @Body(bodyValidationPipe) body: PrefTypeDTO,
+  ): Promise<PrefType> {
+    return await this.usersService.addPrefType(body);
   }
 }

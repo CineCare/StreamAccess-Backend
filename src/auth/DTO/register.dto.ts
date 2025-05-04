@@ -6,6 +6,7 @@ import {
   Matches,
   MinLength,
 } from 'class-validator';
+import { PrefDTO } from 'src/users/DTO/pref.dto';
 
 export class RegisterDTO {
   @IsNotEmpty()
@@ -22,7 +23,7 @@ export class RegisterDTO {
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
-  // NOSONR
+  // NOSONAR
   @Matches(
     /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9\s])([^\s]){8,16}$/gm,
     {
@@ -31,4 +32,7 @@ export class RegisterDTO {
   )
   @ApiProperty()
   password: string;
+
+  @ApiProperty()
+  prefs: PrefDTO[];
 }
