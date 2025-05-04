@@ -136,6 +136,7 @@ describe('UsersService', () => {
       id: 1,
       pseudo: data.pseudo,
       email: 'admin@codevert.org',
+      errors: [],
     });
   });
 

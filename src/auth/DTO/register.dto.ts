@@ -34,5 +34,5 @@ export class RegisterDTO {
   password: string;
 
   @ApiProperty()
-  prefs: PrefDTO[];
+  prefs?: PrefDTO[];
 }
