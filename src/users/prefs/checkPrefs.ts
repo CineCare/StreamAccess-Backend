@@ -48,7 +48,6 @@ export const checkPrefs = async (
     }
     valid.push(pref.name);
   }
-  
 
   return { errors, valid };
 };

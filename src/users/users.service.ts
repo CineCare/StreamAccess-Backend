@@ -91,42 +91,10 @@ export class UsersService {
     // Check if prefs are provided
     //TODO : refactor to use in /auth/register
     if (data.prefs) {
-      // console.log(`prefs provided :`, data.prefs);
-      // for (const pref of data.prefs) {
-      //   const existingPrefType = await this.prisma.prefType.findFirst({
-      //     where: { prefName: pref.name },
-      //   });
-      //   console.log('existingPrefType :', existingPrefType);
-      //   if (!existingPrefType) {
-      //     errors.push(`Preference ${pref.name} does not exist.`);
-      //     continue;
-      //   }
-      //   if (
-      //     existingPrefType.dataType != 'enum' &&
-      //     existingPrefType.dataType !== typeof pref.value
-      //   ) {
-      //     errors.push(
-      //       `Preference ${pref.name} has type ${existingPrefType.dataType} but you provided ${typeof pref.value}.`,
-      //     );
-      //     continue;
-      //   }
-      //   if (existingPrefType.dataType === 'enum') {
-      //     if (!prefEnums[existingPrefType.prefName].includes(pref.value)) {
-      //       errors.push(
-      //         `Preference ${pref.name} has invalid value ${pref.value}. Allowed values are: ${prefEnums[
-      //           existingPrefType.prefName
-      //         ].join(', ')}`,
-      //       );
-      //       continue;
-      //     }
-      //   }
-      // }
       const { valid, errors } = await checkPrefs(data.prefs, this.prisma);
       if (errors.length > 0) {
         prefErrors.push(...errors);
       }
-      console.log('valid prefs :', valid);
-      console.log('errors prefs :', errors);
       // register valid prefs
       const prefData = [];
       for (const pref of valid) {
