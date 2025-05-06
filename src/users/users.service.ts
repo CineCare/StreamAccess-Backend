@@ -41,7 +41,7 @@ export class UsersService {
         },
       });
     } catch (e) {
-      handleErrorResponse(e, 'movieId', id.toString());
+      handleErrorResponse(e, 'userId', id.toString());
     }
   }
 

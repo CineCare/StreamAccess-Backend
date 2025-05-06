@@ -22,6 +22,9 @@ export const editFileName = async (req, file, callback) => {
   } else {
     // eslint-disable-next-line
     console.log('file upload', req.body);
+    if (!req.body.title) {
+      return callback(new Error('No title found'), false);
+    }
     movieTitle = req.body.title;
   }
 
