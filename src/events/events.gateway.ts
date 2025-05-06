@@ -15,8 +15,7 @@ import { UsersService } from '../users/users.service';
   cors: {
     origin: '*',
   },
-  // root for chat
-  //namespace: '/events',
+  namespace: '/events',
 })
 export class EventsGateway {
   @Inject(forwardRef(() => UsersService))
