@@ -20,6 +20,7 @@ export const editFileName = async (req, file, callback) => {
       return callback(e, false);
     }
   } else {
+    console.log('file upload', req.body);
     movieTitle = req.body.title;
   }
 

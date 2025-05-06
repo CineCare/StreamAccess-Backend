@@ -21,4 +21,13 @@ export class CreateMovieDTO {
   @ApiProperty()
   @IsNumberString()
   directorId?: string;
+
+  @ApiProperty()
+  shortSynopsis?: string;
+
+  @ApiProperty()
+  longSynopsis?: string;
+
+  @ApiProperty()
+  teamComment?: string;
 }
