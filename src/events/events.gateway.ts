@@ -42,7 +42,16 @@ export class EventsGateway {
   }
 
   async handleConnection(client: Socket) {
-    const token = client.handshake.headers.authorization.split(' ')[1];
+    let token: string;
+    try {
+      token = client.handshake.headers.authorization.split(' ')[1];
+    } catch {
+      client.emit('message', {
+        error: 'Unauthorized',
+        message: 'no token provided',
+      });
+      client.disconnect();
+    }
     try {
       new JwtService().verify(token, { secret: jwtSecret });
     } catch {
