@@ -4,8 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateMovieDTO } from '../DTO/movieCreate.dto';
-import { UpdateMovieDTO } from '../DTO/movieUpdate.dto';
+import { CreateMovieDTO, UpdateMovieDTO } from '../DTO/movie.dto';
 import { MoviesService } from '../movies.service';
 
 describe('MoviesService', () => {
