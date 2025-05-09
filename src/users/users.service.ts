@@ -95,18 +95,42 @@ export class UsersService {
       if (errors.length > 0) {
         prefErrors.push(...errors);
       }
+      //! check if pref is already in db
+      const existingPrefs = await this.prisma.prefs.findMany({
+        where: {
+          AND: [
+            { userId: id },
+            { name: { in: valid.map((p) => p.name) } },
+            { profileName: { in: valid.map((p) => p.profileName) } },
+          ],
+        },
+      });
       // register valid prefs
       const prefData = [];
       for (const pref of valid) {
-        prefData.push({
-          name: pref,
-          value: data.prefs.find((p) => p.name === pref).value,
-          userId: id,
-        });
+        // check if pref is in existing prefs
+        const existing = existingPrefs.find(
+          (p) => p.name === pref.name && p.profileName === pref.profileName,
+        );
+        if (!existing) {
+          prefData.push({
+            name: pref,
+            value: data.prefs.find((p) => p.name === pref.name).value,
+            profileName: pref.profileName,
+            userId: id,
+          });
+        } else {
+          // update existing pref
+          await this.prisma.prefs.update({
+            where: { id: existing.id },
+            data: {
+              value: data.prefs.find((p) => p.name === pref.name).value,
+            },
+          });
+        }
       }
       await this.prisma.prefs.createMany({
         data: prefData,
-        skipDuplicates: true,
       });
     }
     const newUser = await this.prisma.user.update({

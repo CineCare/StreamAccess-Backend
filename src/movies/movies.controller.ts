@@ -14,9 +14,8 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { CreateMovieDTO } from './DTO/movieCreate.dto';
+import { CreateMovieDTO, UpdateMovieDTO } from './DTO/movie.dto';
 import { MoviesService } from './movies.service';
-import { UpdateMovieDTO } from './DTO/movieUpdate.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editFileName } from '../commons/utils/fileUpload';
@@ -47,7 +46,7 @@ export class MoviesController {
 
   /**
    *
-   *  Must be placed before @Get(':id') to avoid conflicts
+   **  Must be placed before @Get(':id') to avoid conflicts
    *
    */
 
@@ -74,7 +73,7 @@ export class MoviesController {
 
   /**
    *
-   * Movies
+   ** Movies
    *
    */
 
@@ -144,7 +143,7 @@ export class MoviesController {
 
   /**
    *
-   *  Tags
+   ** Tags
    *
    */
 
@@ -196,7 +195,7 @@ export class MoviesController {
 
   /**
    *
-   * Producers
+   ** Producers
    *
    */
 
@@ -243,7 +242,7 @@ export class MoviesController {
 
   /**
    *
-   * Directors
+   ** Directors
    *
    */
 

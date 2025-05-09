@@ -9,4 +9,8 @@ export class PrefDTO {
   @ApiProperty()
   @IsNotEmpty()
   value: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  profileName: string;
 }

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumberString, IsString } from 'class-validator';
 
 export class CreateMovieDTO {
@@ -34,3 +34,5 @@ export class CreateMovieDTO {
   @IsString()
   teamComment?: string;
 }
+
+export class UpdateMovieDTO extends PartialType(CreateMovieDTO) {}

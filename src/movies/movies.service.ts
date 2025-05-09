@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateMovieDTO } from './DTO/movieCreate.dto';
-import { UpdateMovieDTO } from './DTO/movieUpdate.dto';
+import { CreateMovieDTO, UpdateMovieDTO } from './DTO/movie.dto';
 import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
 import { CreateProducerDTO } from './DTO/producerCreate.dto';
 import { UpdateMovieEntity } from './entities/movieUpdate.entity';
@@ -83,7 +82,7 @@ export class MoviesService {
 
   /**
    *
-   * tags
+   ** tags
    *
    */
 
@@ -161,7 +160,7 @@ export class MoviesService {
 
   /**
    *
-   * producers
+   ** producers
    *
    */
 
@@ -208,7 +207,7 @@ export class MoviesService {
 
   /**
    *
-   * directors
+   ** directors
    *
    */
 

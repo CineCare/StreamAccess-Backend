@@ -30,6 +30,7 @@ model Prefs {
   name String
   value String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileName String
 }
 
 model PrefType {
