@@ -22,6 +22,7 @@ describe('MoviesService', () => {
       shortSynopsis: null,
       longSynopsis: null,
       teamComment: null,
+      history: null,
       tags: [
         {
           tag: {
@@ -47,6 +48,7 @@ describe('MoviesService', () => {
       shortSynopsis: null,
       longSynopsis: null,
       teamComment: null,
+      history: null,
       tags: []
     },
     {
@@ -59,6 +61,7 @@ describe('MoviesService', () => {
       shortSynopsis: null,
       longSynopsis: null,
       teamComment: null,
+      history: null,
       tags: []
     },
   ];
@@ -110,6 +113,8 @@ describe('MoviesService', () => {
       shortSynopsis: null,
       longSynopsis: null,
       teamComment: null,
+      history: null,
+      
     };
 
     prismaMock.movie.findUniqueOrThrow.mockResolvedValueOnce(movie);
@@ -151,6 +156,8 @@ describe('MoviesService', () => {
       shortSynopsis: 'Short synopsis',
       longSynopsis: 'Long synopsis',
       teamComment: 'Team comment',
+      history: null,
+      
     };
 
     prismaMock.movie.create.mockResolvedValueOnce(createdMovie);
@@ -220,6 +227,8 @@ describe('MoviesService', () => {
       shortSynopsis: 'Short synopsis',
       longSynopsis: 'Long synopsis',
       teamComment: 'Team comment',
+      history: null,
+      
     };
 
     prismaMock.movie.update.mockResolvedValue(updatedMovie);
@@ -275,6 +284,8 @@ describe('MoviesService', () => {
       shortSynopsis: 'Short synopsis',
       longSynopsis: 'Long synopsis',
       teamComment: 'Team comment',
+      history: null,
+      
     };
 
     jest.spyOn(prismaMock.movie, 'delete').mockResolvedValue(deletedMovie);
