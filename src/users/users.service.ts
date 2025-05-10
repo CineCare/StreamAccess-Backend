@@ -9,8 +9,8 @@ import { UpdateUserDTO } from './DTO/userUpdate.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserEntity } from './entities/updateUser.entity';
 import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
-import { PrefTypeDTO } from './DTO/prefType.dto';
-import { checkPrefs } from './prefs/checkPrefs';
+import * as prefHandler from '../commons/utils/prefsHandler';
+import { UserMappedDTO } from './DTO/userMapped.dto';
 
 @Injectable()
 export class UsersService {
@@ -23,23 +23,34 @@ export class UsersService {
     });
   }
 
-  async getOne(id: number, additionnalFields?: object): Promise<UserEntity> {
+  async getOne(id: number, additionnalFields?: object): Promise<UserMappedDTO> {
+    // console.log('fields :', additionnalFields);
+    // console.log(...arguments);
     try {
-      return await this.prisma.user.findUniqueOrThrow({
+      const user = (await this.prisma.user.findUniqueOrThrow({
         where: { id: id },
         select: {
           id: true,
           pseudo: true,
           isActive: true,
-          prefs: {
-            select: {
-              name: true,
-              value: true,
-            },
-          },
           ...additionnalFields,
         },
-      });
+      })) as UserEntity;
+      //console.log(user);
+      const mappedUser = {
+        ...user,
+        prefs: user.prefs
+          ? user.prefs.reduce((acc, pref) => {
+              if (!acc[pref.profileName]) {
+                acc[pref.profileName] = {};
+              }
+              acc[pref.profileName][pref.name] = pref.value;
+              return acc;
+            }, {})
+          : undefined,
+      };
+
+      return mappedUser;
     } catch (e) {
       handleErrorResponse(e, 'userId', id.toString());
     }
@@ -57,7 +68,6 @@ export class UsersService {
     data: UpdateUserDTO,
   ): Promise<UserEntity & { errors: string[] }> {
     const newData: UpdateUserEntity = {};
-    const prefErrors = [];
     if (data.actualPassword) {
       const user = await this.prisma.user.findUnique({
         where: { id },
@@ -88,50 +98,9 @@ export class UsersService {
     if (data.pseudo) {
       newData.pseudo = data.pseudo;
     }
-    // Check if prefs are provided
-    //TODO : refactor to use in /auth/register
+    let prefErrors = [];
     if (data.prefs) {
-      const { valid, errors } = await checkPrefs(data.prefs, this.prisma);
-      if (errors.length > 0) {
-        prefErrors.push(...errors);
-      }
-      //! check if pref is already in db
-      const existingPrefs = await this.prisma.prefs.findMany({
-        where: {
-          AND: [
-            { userId: id },
-            { name: { in: valid.map((p) => p.name) } },
-            { profileName: { in: valid.map((p) => p.profileName) } },
-          ],
-        },
-      });
-      // register valid prefs
-      const prefData = [];
-      for (const pref of valid) {
-        // check if pref is in existing prefs
-        const existing = existingPrefs.find(
-          (p) => p.name === pref.name && p.profileName === pref.profileName,
-        );
-        if (!existing) {
-          prefData.push({
-            name: pref,
-            value: data.prefs.find((p) => p.name === pref.name).value,
-            profileName: pref.profileName,
-            userId: id,
-          });
-        } else {
-          // update existing pref
-          await this.prisma.prefs.update({
-            where: { id: existing.id },
-            data: {
-              value: data.prefs.find((p) => p.name === pref.name).value,
-            },
-          });
-        }
-      }
-      await this.prisma.prefs.createMany({
-        data: prefData,
-      });
+      prefErrors = await this.handlePrefs(data.prefs, id);
     }
     const newUser = await this.prisma.user.update({
       where: { id },
@@ -141,11 +110,57 @@ export class UsersService {
       id: newUser.id,
       pseudo: newUser.pseudo,
       email: newUser.email,
-      errors: prefErrors,
+      errors: prefErrors.length > 0 ? prefErrors : undefined,
     };
   }
 
-  async addPrefType(body: PrefTypeDTO) {
+  async handlePrefs(prefs: prefHandler.PrefDTO[], id: number) {
+    const prefErrors = [];
+    const { valid, errors } = await prefHandler.checkPrefs(prefs, this.prisma);
+    if (errors.length > 0) {
+      prefErrors.push(...errors);
+    }
+    // check if pref is already in db
+    const existingPrefs = await this.prisma.prefs.findMany({
+      where: {
+        AND: [
+          { userId: id },
+          { name: { in: valid.map((p) => p.name) } },
+          { profileName: { in: valid.map((p) => p.profileName) } },
+        ],
+      },
+    });
+    // register valid prefs
+    const prefData = [];
+    for (const pref of valid) {
+      // check if pref is in existing prefs
+      const existing = existingPrefs.find(
+        (p) => p.name === pref.name && p.profileName === pref.profileName,
+      );
+      if (!existing) {
+        prefData.push({
+          name: pref.name,
+          value: prefs.find((p) => p.name === pref.name).value,
+          profileName: pref.profileName,
+          userId: id,
+        });
+      } else {
+        // update existing pref
+        await this.prisma.prefs.update({
+          where: { id: existing.id },
+          data: {
+            value: prefs.find((p) => p.name === pref.name).value,
+          },
+        });
+      }
+    }
+    await this.prisma.prefs.createMany({
+      data: prefData,
+    });
+    return prefErrors;
+  }
+
+  async addPrefType(body: prefHandler.PrefTypeDTO) {
     const { prefName, dataType } = body;
     // Check if prefName already exists
     const existingPrefType = await this.prisma.prefType.findFirst({

@@ -1,6 +1,34 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PrefDTO } from '../DTO/pref.dto';
-import { prefEnums } from './prefEnums';
+
+export class PrefDTO {
+  @IsNotEmpty()
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  value: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  profileName: string;
+}
+
+export class PrefTypeDTO {
+  @IsNotEmpty()
+  @ApiProperty()
+  prefName: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  dataType: string;
+}
+
+export const prefEnums = {
+  theme: ['default', 'soft', 'lightTheme', 'highContrast', 'largeText'],
+};
 
 export const checkPrefs = async (
   prefs: PrefDTO[],
@@ -11,21 +39,17 @@ export const checkPrefs = async (
 }> => {
   const errors: string[] = [];
   const valid: { name: string; profileName: string }[] = [];
+  //check for duplicates
+  const duplicates = checkDuplicates(prefs);
+  if (duplicates.errors.length > 0) {
+    errors.push(duplicates.errors.join(', '));
+    prefs = duplicates.prefs;
+  }
   for (const pref of prefs) {
     // check if pref is of type PrefDTO
     if (!pref.name || !pref.value || !pref.profileName) {
       errors.push(
         `some preferences are invalid. Required properties are name, value and profileName.`,
-      );
-      continue;
-    }
-    // check if pref has no duplicates
-    const count: number = prefs.filter(
-      (p) => p.name === pref.name && p.profileName === pref.profileName,
-    ).length;
-    if (count > 2) {
-      errors.push(
-        `Preference ${pref.name} for profile ${pref.profileName} is duplicated. It will be ignored.`,
       );
       continue;
     }
@@ -66,4 +90,22 @@ export const checkPrefs = async (
   }
 
   return { errors, valid };
+};
+
+const checkDuplicates = (prefs: PrefDTO[]) => {
+  const errors: string[] = [];
+  for (const pref of prefs) {
+    const count: number = prefs.filter(
+      (p) => p.name === pref.name && p.profileName === pref.profileName,
+    ).length;
+    if (count > 1) {
+      errors.push(
+        `Preference ${pref.name} for profile ${pref.profileName} is duplicated. It will be ignored.`,
+      );
+      prefs = prefs.filter(
+        (p) => p.name !== pref.name || p.profileName !== pref.profileName,
+      );
+    }
+  }
+  return { errors, prefs };
 };

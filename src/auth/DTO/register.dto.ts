@@ -6,7 +6,7 @@ import {
   Matches,
   MinLength,
 } from 'class-validator';
-import { PrefDTO } from 'src/users/DTO/pref.dto';
+import { PrefDTO } from '../../commons/utils/prefsHandler';
 
 export class RegisterDTO {
   @IsNotEmpty()

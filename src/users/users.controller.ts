@@ -27,7 +27,7 @@ import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
 import { UpdateUserDTO } from './DTO/userUpdate.dto';
 import { bodyValidationPipe } from '../commons/validationPipes/bodyValidation.pipe';
 import { ParseQueryIdPipe } from '../commons/validationPipes/parseQueryId.pipe';
-import { PrefTypeDTO } from './DTO/prefType.dto';
+import { PrefTypeDTO } from '../commons/utils/prefsHandler';
 import { PrefType } from '@prisma/client';
 
 const userValidationPipe = new ParseQueryIdPipe('user');
@@ -52,7 +52,7 @@ export class UsersController {
   getMe(@Req() req) {
     return this.usersService.getOne(req.user.id, {
       email: true,
-      isActive: true,
+      prefs: { select: { name: true, value: true, profileName: true } },
     });
   }
 

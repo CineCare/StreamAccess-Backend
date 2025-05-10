@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { PrefDTO } from './pref.dto';
+import { PrefDTO } from '../../commons/utils/prefsHandler';
 
 export class UpdateUserDTO {
   @IsNotEmpty()
