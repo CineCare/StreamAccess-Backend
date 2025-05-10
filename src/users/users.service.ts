@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserEntity } from './entities/updateUser.entity';
 import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
 import * as prefHandler from '../commons/utils/prefsHandler';
-import { UserMappedDTO } from './DTO/userMapped.dto';
+import { MappedUserDTO } from './DTO/userMapped.dto';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +23,7 @@ export class UsersService {
     });
   }
 
-  async getOne(id: number, additionnalFields?: object): Promise<UserMappedDTO> {
+  async getOne(id: number, additionnalFields?: object): Promise<MappedUserDTO> {
     // console.log('fields :', additionnalFields);
     // console.log(...arguments);
     try {

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PrefDTO } from '../../commons/utils/prefsHandler';
 
-export class UserMappedDTO {
+export class MappedUserDTO {
   @ApiProperty()
   id: number;
 
@@ -14,5 +15,5 @@ export class UserMappedDTO {
   isActive?: boolean;
 
   @ApiProperty()
-  prefs?: any;
+  prefs: Record<string, PrefDTO>;
 }

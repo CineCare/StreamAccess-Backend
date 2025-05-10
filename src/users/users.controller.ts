@@ -21,7 +21,7 @@ import { UsersService } from './users.service';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { UserEntity } from './entities/user.entity';
-import { MineUserEntity } from './entities/mineUser.etity';
+import { MappedUserDTO } from './DTO/userMapped.dto';
 import { CandidateEntity } from './entities/candidate.entity';
 import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
 import { UpdateUserDTO } from './DTO/userUpdate.dto';
@@ -46,10 +46,10 @@ export class UsersController {
   }
 
   @Get('me')
-  @ApiOkResponse({ type: MineUserEntity })
+  @ApiOkResponse({ type: MappedUserDTO })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  getMe(@Req() req) {
+  getMe(@Req() req): Promise<MappedUserDTO> {
     return this.usersService.getOne(req.user.id, {
       email: true,
       prefs: { select: { name: true, value: true, profileName: true } },
@@ -77,14 +77,14 @@ export class UsersController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: UserEntity })
+  @ApiOkResponse({ type: MappedUserDTO })
   @ApiNotFoundResponse()
   @ApiBadRequestResponse({ type: BadRequestException })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async getOne(
     @Param('id', userValidationPipe) id: number,
-  ): Promise<UserEntity> {
+  ): Promise<MappedUserDTO> {
     try {
       return await this.usersService.getOne(id);
     } catch (e) {
