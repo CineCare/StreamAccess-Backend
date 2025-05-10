@@ -50,7 +50,8 @@ model Movie {
   director Director? @relation(fields: [directorId], references: [id], onDelete: SetNull)
   shortSynopsis String? @db.VarChar(500)
   longSynopsis String ? @db.VarChar(2000)
-  teamComment String?
+  teamComment String? @db.VarChar(2000)
+  history String? @db.VarChar(2000)
   tags MovieTagMovie[]
 }
 
