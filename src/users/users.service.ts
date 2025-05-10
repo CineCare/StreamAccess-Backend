@@ -24,8 +24,6 @@ export class UsersService {
   }
 
   async getOne(id: number, additionnalFields?: object): Promise<MappedUserDTO> {
-    // console.log('fields :', additionnalFields);
-    // console.log(...arguments);
     try {
       const user = (await this.prisma.user.findUniqueOrThrow({
         where: { id: id },
@@ -36,7 +34,6 @@ export class UsersService {
           ...additionnalFields,
         },
       })) as UserEntity;
-      //console.log(user);
       const mappedUser = {
         ...user,
         prefs: user.prefs

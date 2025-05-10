@@ -53,38 +53,9 @@ export const checkPrefs = async (
       );
       continue;
     }
-    // check if pref name and type are legit
-    const existingPrefType = await prisma.prefType.findFirst({
-      where: { prefName: pref.name },
-    });
-    if (!existingPrefType) {
-      errors.push(`Preference ${pref.name} does not exist.`);
+    if (await checkPrefType(pref, prisma)) {
+      errors.push(await checkPrefType(pref, prisma));
       continue;
-    }
-    if (
-      existingPrefType.dataType !== 'enum' &&
-      existingPrefType.dataType !== typeof pref.value
-    ) {
-      errors.push(
-        `Preference ${pref.name} has type ${existingPrefType.dataType} but you provided ${typeof pref.value}.`,
-      );
-      continue;
-    }
-    if (existingPrefType.dataType === 'enum') {
-      if (typeof pref.value !== 'string') {
-        errors.push(
-          `Preference ${pref.name} has type ${existingPrefType.dataType} but you provided ${typeof pref.value}.`,
-        );
-        continue;
-      }
-      if (!prefEnums[existingPrefType.prefName].includes(pref.value)) {
-        errors.push(
-          `Preference ${pref.name} has invalid value ${pref.value}. Allowed values are: ${prefEnums[
-            existingPrefType.prefName
-          ].join(', ')}`,
-        );
-        continue;
-      }
     }
     valid.push({ name: pref.name, profileName: pref.profileName });
   }
@@ -108,4 +79,40 @@ const checkDuplicates = (prefs: PrefDTO[]) => {
     }
   }
   return { errors, prefs };
+};
+
+const checkPrefType = async (pref, prisma) => {
+  let error: string = null;
+  if (!pref.name || !pref.value || !pref.profileName) {
+    error = `some preferences are invalid. Required properties are name, value and profileName.`;
+    return error;
+  }
+  // check if pref name and type are legit
+  const existingPrefType = await prisma.prefType.findFirst({
+    where: { prefName: pref.name },
+  });
+  if (!existingPrefType) {
+    error = `Preference ${pref.name} does not exist.`;
+    return error;
+  }
+  if (
+    existingPrefType.dataType !== 'enum' &&
+    existingPrefType.dataType !== typeof pref.value
+  ) {
+    error = `Preference ${pref.name} has type ${existingPrefType.dataType} but you provided ${typeof pref.value}.`;
+    return error;
+  }
+  if (existingPrefType.dataType === 'enum') {
+    if (typeof pref.value !== 'string') {
+      error = `Preference ${pref.name} has type ${existingPrefType.dataType} but you provided ${typeof pref.value}.`;
+      return error;
+    }
+    if (!prefEnums[existingPrefType.prefName].includes(pref.value)) {
+      error = `Preference ${pref.name} has invalid value ${pref.value}. Allowed values are: ${prefEnums[
+        existingPrefType.prefName
+      ].join(', ')}`;
+      return error;
+    }
+  }
+  return null;
 };
