@@ -33,6 +33,10 @@ export class CreateMovieDTO {
   @ApiProperty()
   @IsString()
   teamComment?: string;
+
+  @ApiProperty()
+  @IsString()
+  history?: string;
 }
 
 export class UpdateMovieDTO extends PartialType(CreateMovieDTO) {}
