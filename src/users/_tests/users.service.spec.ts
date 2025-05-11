@@ -156,35 +156,86 @@ describe('UsersService', () => {
       actualPassword: 'test',
       newPassword: 'updated',
       newPasswordConfirm: 'updated',
+      prefs: [
+        {
+          name: 'theme',
+          value: 'soft',
+          profileName: 'test',
+        },
+      ],
     };
 
     const hash = await bcrypt.hash(data.actualPassword, 10);
-    prismaMock.user.findUnique.mockResolvedValue({
+    const user = {
       id: data.id,
       pseudo: 'before_test',
       password: hash,
       email: 'admin@codevert.org',
       isActive: true,
+      prefs: [
+        {
+          id: 1,
+          name: 'theme',
+          value: 'default',
+          profileName: 'test',
+          userId: 1,
+        },
+      ],
       updatedAt: new Date(),
       createdAt: new Date(),
-    });
-    prismaMock.user.update.mockResolvedValue({
-      id: data.id,
-      pseudo: 'test',
-      password: 'updated',
-      email: 'admin@codevert.org',
-      isActive: true,
-      updatedAt: new Date(),
-      createdAt: new Date(),
-    });
+    };
+
+    const updatedUser = {
+      ...user,
+      pseudo: data.pseudo,
+      password: await bcrypt.hash(data.newPassword, 10),
+      email: user.email,
+      isActive: user.isActive,
+      prefs: [
+        {
+          id: 1,
+          name: 'theme',
+          value: 'soft',
+          profileName: 'test',
+          userId: 1,
+        },
+      ],
+    };
+
+    const pref = {
+      id: 1,
+      name: 'theme',
+      value: 'default',
+      profileName: 'test',
+      userId: 1,
+    };
+
+    const prefTypes = {
+      id: 1,
+      prefName: 'theme',
+      dataType: 'enum',
+    };
+
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    prismaMock.prefs.findFirst.mockResolvedValue(pref);
+    prismaMock.prefs.findMany.mockResolvedValue([pref]);
+    prismaMock.prefType.findFirst.mockResolvedValue(prefTypes);
+    prismaMock.prefType.findMany.mockResolvedValue([prefTypes]);
+    prismaMock.user.update.mockResolvedValue(updatedUser);
 
     const result = await service.updateMe(1, data);
-
-    expect(result).toEqual({
-      id: 1,
+    const mappedUser = {
+      id: data.id,
       pseudo: data.pseudo,
-      email: 'admin@codevert.org',
-    });
+      email: user.email,
+      prefs: {
+        test: {
+          theme: 'soft',
+        },
+      },
+    };
+
+    expect(result).toEqual(mappedUser);
   });
 
   it('should fail updating a wrong user', async () => {
