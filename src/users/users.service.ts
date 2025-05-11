@@ -35,32 +35,7 @@ export class UsersService {
         },
       })) as UserEntity;
       if (user.prefs) {
-        const prefTypes = await this.prisma.prefType.findMany({
-          where: {
-            prefName: { in: user.prefs.map((pref) => pref.name) },
-          },
-        });
-        user.prefs = user.prefs.map((pref) => {
-          if (
-            prefTypes.find((p) => p.prefName === pref.name).dataType ===
-            'boolean'
-          ) {
-            return {
-              ...pref,
-              value: pref.value === 'true' ? true : false,
-            };
-          }
-          if (
-            prefTypes.find((p) => p.prefName === pref.name).dataType ===
-            'number'
-          ) {
-            return {
-              ...pref,
-              value: parseFloat(pref.value.toString()),
-            };
-          }
-          return pref;
-        });
+        await this.castUserPrefs(user);
       }
       const mappedUser = {
         ...user,
@@ -151,30 +126,7 @@ export class UsersService {
       },
     })) as UserEntity;
     if (newUser.prefs) {
-      const prefTypes = await this.prisma.prefType.findMany({
-        where: {
-          prefName: { in: newUser.prefs.map((pref) => pref.name) },
-        },
-      });
-      newUser.prefs = newUser.prefs.map((pref) => {
-        if (
-          prefTypes.find((p) => p.prefName === pref.name).dataType === 'boolean'
-        ) {
-          return {
-            ...pref,
-            value: pref.value === 'true' ? true : false,
-          };
-        }
-        if (
-          prefTypes.find((p) => p.prefName === pref.name).dataType === 'number'
-        ) {
-          return {
-            ...pref,
-            value: parseFloat(pref.value.toString()),
-          };
-        }
-        return pref;
-      });
+      await this.castUserPrefs(newUser);
     }
 
     const mappedUser = {
@@ -190,6 +142,33 @@ export class UsersService {
       prefs: mappedUser.prefs,
       errors: prefErrors.length > 0 ? prefErrors : undefined,
     };
+  }
+
+  private async castUserPrefs(newUser: UserEntity) {
+    const prefTypes = await this.prisma.prefType.findMany({
+      where: {
+        prefName: { in: newUser.prefs.map((pref) => pref.name) },
+      },
+    });
+    newUser.prefs = newUser.prefs.map((pref) => {
+      if (
+        prefTypes.find((p) => p.prefName === pref.name).dataType === 'boolean'
+      ) {
+        return {
+          ...pref,
+          value: pref.value === 'true' ? true : false,
+        };
+      }
+      if (
+        prefTypes.find((p) => p.prefName === pref.name).dataType === 'number'
+      ) {
+        return {
+          ...pref,
+          value: parseFloat(pref.value.toString()),
+        };
+      }
+      return pref;
+    });
   }
 
   async handlePrefs(prefs: prefHandler.PrefDTO[], id: number) {
