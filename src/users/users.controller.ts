@@ -64,7 +64,7 @@ export class UsersController {
     return this.usersService.getCandidates();
   }
 
-  @ApiOkResponse({ type: UserEntity })
+  @ApiOkResponse({ type: MappedUserDTO })
   @ApiBadRequestResponse({ type: BadRequestException })
   @Put('me')
   @UseGuards(JwtAuthGuard)
@@ -72,7 +72,7 @@ export class UsersController {
   async updateMe(
     @Request() req,
     @Body(bodyValidationPipe) body: UpdateUserDTO,
-  ): Promise<UserEntity> {
+  ): Promise<MappedUserDTO> {
     return await this.usersService.updateMe(req.user.id, body);
   }
 

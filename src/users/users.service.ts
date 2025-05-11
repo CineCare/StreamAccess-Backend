@@ -34,6 +34,34 @@ export class UsersService {
           ...additionnalFields,
         },
       })) as UserEntity;
+      if (user.prefs) {
+        const prefTypes = await this.prisma.prefType.findMany({
+          where: {
+            prefName: { in: user.prefs.map((pref) => pref.name) },
+          },
+        });
+        user.prefs = user.prefs.map((pref) => {
+          if (
+            prefTypes.find((p) => p.prefName === pref.name).dataType ===
+            'boolean'
+          ) {
+            return {
+              ...pref,
+              value: pref.value === 'true' ? true : false,
+            };
+          }
+          if (
+            prefTypes.find((p) => p.prefName === pref.name).dataType ===
+            'number'
+          ) {
+            return {
+              ...pref,
+              value: parseFloat(pref.value.toString()),
+            };
+          }
+          return pref;
+        });
+      }
       const mappedUser = {
         ...user,
         prefs: user.prefs
@@ -42,6 +70,7 @@ export class UsersService {
                 acc[pref.profileName] = {};
               }
               acc[pref.profileName][pref.name] = pref.value;
+
               return acc;
             }, {})
           : undefined,
@@ -63,7 +92,7 @@ export class UsersService {
   async updateMe(
     id: number,
     data: UpdateUserDTO,
-  ): Promise<UserEntity & { errors: string[] }> {
+  ): Promise<MappedUserDTO & { errors: string[] }> {
     const newData: UpdateUserEntity = {};
     if (data.actualPassword) {
       const user = await this.prisma.user.findUnique({
@@ -99,14 +128,64 @@ export class UsersService {
     if (data.prefs) {
       prefErrors = await this.handlePrefs(data.prefs, id);
     }
-    const newUser = await this.prisma.user.update({
+    const newUser = (await this.prisma.user.update({
       where: { id },
       data: newData,
-    });
+      include: {
+        prefs: {
+          select: {
+            name: true,
+            value: true,
+            profileName: true,
+          },
+        },
+      },
+    })) as UserEntity;
+    if (newUser.prefs) {
+      const prefTypes = await this.prisma.prefType.findMany({
+        where: {
+          prefName: { in: newUser.prefs.map((pref) => pref.name) },
+        },
+      });
+      newUser.prefs = newUser.prefs.map((pref) => {
+        if (
+          prefTypes.find((p) => p.prefName === pref.name).dataType === 'boolean'
+        ) {
+          return {
+            ...pref,
+            value: pref.value === 'true' ? true : false,
+          };
+        }
+        if (
+          prefTypes.find((p) => p.prefName === pref.name).dataType === 'number'
+        ) {
+          return {
+            ...pref,
+            value: parseFloat(pref.value.toString()),
+          };
+        }
+        return pref;
+      });
+    }
+
+    const mappedUser = {
+      ...newUser,
+      prefs: newUser.prefs
+        ? newUser.prefs.reduce((acc, pref) => {
+            if (!acc[pref.profileName]) {
+              acc[pref.profileName] = {};
+            }
+            acc[pref.profileName][pref.name] = pref.value;
+
+            return acc;
+          }, {})
+        : undefined,
+    };
     return {
-      id: newUser.id,
-      pseudo: newUser.pseudo,
-      email: newUser.email,
+      id: mappedUser.id,
+      pseudo: mappedUser.pseudo,
+      email: mappedUser.email,
+      prefs: mappedUser.prefs,
       errors: prefErrors.length > 0 ? prefErrors : undefined,
     };
   }
@@ -137,7 +216,7 @@ export class UsersService {
       if (!existing) {
         prefData.push({
           name: pref.name,
-          value: prefs.find((p) => p.name === pref.name).value,
+          value: prefs.find((p) => p.name === pref.name).value.toString(),
           profileName: pref.profileName,
           userId: id,
         });
@@ -146,7 +225,7 @@ export class UsersService {
         await this.prisma.prefs.update({
           where: { id: existing.id },
           data: {
-            value: prefs.find((p) => p.name === pref.name).value,
+            value: prefs.find((p) => p.name === pref.name).value.toString(),
           },
         });
       }

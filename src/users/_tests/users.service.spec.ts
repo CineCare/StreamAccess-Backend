@@ -73,6 +73,54 @@ describe('UsersService', () => {
     expect(result).toEqual(user);
   });
 
+  it('should get my user data with prefs', async () => {
+    const user = {
+      id: 1,
+      pseudo: 'test1',
+      email: 'test.codevert.org',
+      password: 'secret',
+      isActive: true,
+      prefs: [
+        {
+          id: 1,
+          name: 'test',
+          value: 'test',
+          profileName: 'test',
+          userId: 1,
+        },
+      ],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const mappedUser = {
+      ...user,
+      prefs: {
+        test: {
+          test: 'test',
+        },
+      },
+    };
+
+    const prefTypes = [
+      {
+        id: 1,
+        prefName: 'test',
+        dataType: 'string',
+      },
+    ];
+
+    prismaMock.user.findUniqueOrThrow.mockResolvedValueOnce(user);
+    prismaMock.prefType.findMany.mockResolvedValue(prefTypes);
+
+    const result = await service.getOne(1, {
+      email: true,
+      prefs: { select: { name: true, value: true, profileName: true } },
+    });
+
+    expect(result).toEqual(mappedUser);
+  });
+
   it('should fail getting a user that do not exists', async () => {
     prismaMock.user.findUniqueOrThrow.mockRejectedValue({ code: 'P2025' });
 

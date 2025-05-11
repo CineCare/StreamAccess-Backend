@@ -9,7 +9,7 @@ export class PrefDTO {
 
   @ApiProperty()
   @IsNotEmpty()
-  value: string;
+  value: string | number | boolean;
 
   @ApiProperty()
   @IsNotEmpty()
