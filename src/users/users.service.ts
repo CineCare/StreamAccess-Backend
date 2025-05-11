@@ -65,14 +65,7 @@ export class UsersService {
       const mappedUser = {
         ...user,
         prefs: user.prefs
-          ? user.prefs.reduce((acc, pref) => {
-              if (!acc[pref.profileName]) {
-                acc[pref.profileName] = {};
-              }
-              acc[pref.profileName][pref.name] = pref.value;
-
-              return acc;
-            }, {})
+          ? user.prefs.reduce(this.reducePrefs(), {})
           : undefined,
       };
 
@@ -80,6 +73,22 @@ export class UsersService {
     } catch (e) {
       handleErrorResponse(e, 'userId', id.toString());
     }
+  }
+
+  private reducePrefs(): (
+    previousValue: object,
+    currentValue: prefHandler.PrefDTO,
+    currentIndex: number,
+    array: prefHandler.PrefDTO[],
+  ) => object {
+    return (acc, pref) => {
+      if (!acc[pref.profileName]) {
+        acc[pref.profileName] = {};
+      }
+      acc[pref.profileName][pref.name] = pref.value;
+
+      return acc;
+    };
   }
 
   async getCandidates() {
@@ -171,14 +180,7 @@ export class UsersService {
     const mappedUser = {
       ...newUser,
       prefs: newUser.prefs
-        ? newUser.prefs.reduce((acc, pref) => {
-            if (!acc[pref.profileName]) {
-              acc[pref.profileName] = {};
-            }
-            acc[pref.profileName][pref.name] = pref.value;
-
-            return acc;
-          }, {})
+        ? newUser.prefs.reduce(this.reducePrefs(), {})
         : undefined,
     };
     return {
