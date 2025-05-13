@@ -32,6 +32,7 @@ export class UsersService {
         select: {
           id: true,
           pseudo: true,
+          avatar: true,
           isActive: true,
           ...additionnalFields,
         },
