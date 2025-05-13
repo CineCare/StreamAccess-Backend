@@ -311,10 +311,12 @@ describe('MoviesService', () => {
       {
         id: 1,
         label: 'tag1',
+        icon: "icon1"
       },
       {
         id: 2,
         label: 'tag2',
+        icon: "icon2"
       },
     ];
 
@@ -351,10 +353,11 @@ describe('MoviesService', () => {
   });
 
   it('sould create a tag', async () => {
-    const createMovieTagDTO = { label: 'tag1' };
+    const createMovieTagDTO = { label: 'tag1', icon: 'icon1' };
     const mockedResult = {
       id: 1,
       label: createMovieTagDTO.label,
+      icon: createMovieTagDTO.icon,
     };
 
     prismaMock.movieTag.create.mockResolvedValue(mockedResult);
@@ -368,6 +371,7 @@ describe('MoviesService', () => {
     const tag = {
       id: 1,
       label: 'tag',
+      "icon": 'icon1',
     };
     prismaMock.movieTag.delete.mockResolvedValue(tag);
     const result = await service.deleteTag(1);
@@ -435,14 +439,17 @@ describe('MoviesService', () => {
       {
         id: 1,
         label: 'tag1',
+        icon: 'icon1',
       },
       {
-        id: 1,
-        label: 'tag1',
+        id: 2,
+        label: 'tag2',
+        icon: 'icon2',
       },
       {
-        id: 1,
-        label: 'tag1',
+        id: 3,
+        label: 'tag3',
+        icon: 'icon3',
       },
     ];
 
