@@ -83,10 +83,6 @@ const checkDuplicates = (prefs: PrefDTO[]) => {
 
 const checkPrefType = async (pref, prisma) => {
   let error: string = null;
-  if (!pref.name || !pref.value || !pref.profileName) {
-    error = `some preferences are invalid. Required properties are name, value and profileName.`;
-    return error;
-  }
   // check if pref name and type are legit
   const existingPrefType = await prisma.prefType.findFirst({
     where: { prefName: pref.name },

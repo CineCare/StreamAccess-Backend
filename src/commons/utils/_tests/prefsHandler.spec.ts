@@ -64,6 +64,46 @@ describe('prefsHandler', () => {
     });
   });
 
+  it('should ignore prefs of type enum with wrong value type', async () => {
+    const prefs = [
+      {
+        name: 'test',
+        value: 2,
+        profileName: 'test',
+      },
+    ];
+    prismaMock.prefType.findFirst.mockResolvedValue({
+      prefName: 'test',
+      dataType: 'enum',
+    });
+    const test = await checkPrefs(prefs, prismaServiceMock);
+    expect(test).toEqual({
+      errors: [`Preference test has type enum but you provided number.`],
+      valid: [],
+    });
+  });
+
+  it('should ignore pref of type enum with wrong value', async () => {
+    const prefs = [
+      {
+        name: 'theme',
+        value: 'wrong',
+        profileName: 'test',
+      },
+    ];
+    prismaMock.prefType.findFirst.mockResolvedValue({
+      prefName: 'theme',
+      dataType: 'enum',
+    });
+    const test = await checkPrefs(prefs, prismaServiceMock);
+    expect(test).toEqual({
+      errors: [
+        `Preference theme has invalid value wrong. Allowed values are: default, soft, lightTheme, highContrast, largeText`,
+      ],
+      valid: [],
+    });
+  });
+
   it('should ignore duplicates', async () => {
     const prefs = [
       {

@@ -153,6 +153,43 @@ describe('UsersService', () => {
     const data = {
       id: 1,
       pseudo: 'test',
+    };
+
+    const user = {
+      id: data.id,
+      pseudo: 'before_test',
+      password: 'hash',
+      email: 'admin@codevert.org',
+      isActive: true,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+    };
+
+    const updatedUser = {
+      ...user,
+      pseudo: data.pseudo,
+    };
+
+    const mappedUser = {
+      id: data.id,
+      pseudo: data.pseudo,
+      email: user.email,
+      prefs: undefined,
+      errors: undefined,
+    };
+
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    prismaMock.user.update.mockResolvedValue(updatedUser);
+
+    const result = await service.updateMe(1, data);
+
+    expect(result).toEqual(mappedUser);
+  });
+
+  it('should update a user with password and prefs', async () => {
+    const data = {
+      id: 1,
+      pseudo: 'test',
       actualPassword: 'test',
       newPassword: 'updated',
       newPasswordConfirm: 'updated',
@@ -160,6 +197,11 @@ describe('UsersService', () => {
         {
           name: 'theme',
           value: 'soft',
+          profileName: 'test',
+        },
+        {
+          name: 'test',
+          value: 'test',
           profileName: 'test',
         },
       ],
@@ -233,6 +275,9 @@ describe('UsersService', () => {
           theme: 'soft',
         },
       },
+      errors: [
+        'Preference test has invalid value test. Allowed values are: default, soft, lightTheme, highContrast, largeText',
+      ],
     };
 
     expect(result).toEqual(mappedUser);
@@ -323,6 +368,181 @@ describe('UsersService', () => {
 
     await expect(async () => await service.updateMe(1, data)).rejects.toThrow(
       'Le nouveau mot de passe et la confirmation sont différents',
+    );
+  });
+
+  it('should cast user prefs', async () => {
+    const prefs = [
+      {
+        id: 1,
+        name: 'highConstrast',
+        value: 'true',
+        profileName: 'test',
+        userId: 1,
+      },
+      {
+        id: 2,
+        name: 'audioDescription',
+        value: 'false',
+        profileName: 'test',
+        userId: 1,
+      },
+      {
+        id: 3,
+        name: 'fontSize',
+        value: '14',
+        profileName: 'test',
+        userId: 1,
+      },
+    ];
+
+    const user = {
+      id: 1,
+      pseudo: 'test',
+      prefs: prefs,
+    };
+
+    const prefTypes = [
+      {
+        id: 1,
+        prefName: 'highConstrast',
+        dataType: 'boolean',
+      },
+      {
+        id: 2,
+        prefName: 'audioDescription',
+        dataType: 'boolean',
+      },
+      {
+        id: 3,
+        prefName: 'fontSize',
+        dataType: 'number',
+      },
+    ];
+
+    prismaMock.prefType.findMany.mockResolvedValue(prefTypes);
+
+    await service.castUserPrefs(user);
+    const expectedResult = {
+      ...user,
+      prefs: [
+        {
+          id: 1,
+          name: 'highConstrast',
+          value: true,
+          profileName: 'test',
+          userId: 1,
+        },
+        {
+          id: 2,
+          name: 'audioDescription',
+          value: false,
+          profileName: 'test',
+          userId: 1,
+        },
+        {
+          id: 3,
+          name: 'fontSize',
+          value: 14,
+          profileName: 'test',
+          userId: 1,
+        },
+      ],
+    };
+    expect(user).toEqual(expectedResult);
+  });
+
+  it('should handle prefs', async () => {
+    const prefs = [
+      {
+        id: 1,
+        name: 'highConstrast',
+        value: true,
+        profileName: 'test',
+        userId: 1,
+      },
+      {
+        id: 1,
+        name: 'wrong',
+        value: 'true',
+        profileName: 'test',
+        userId: 1,
+      },
+    ];
+
+    const existingPrefs = [];
+
+    prismaMock.prefs.findMany.mockResolvedValue(existingPrefs);
+    prismaMock.prefType.findFirst.mockResolvedValue({
+      id: 1,
+      prefName: 'highConstrast',
+      dataType: 'boolean',
+    });
+
+    const prefTypes = [
+      {
+        id: 1,
+        prefName: 'highConstrast',
+        dataType: 'boolean',
+      },
+    ];
+    prismaMock.prefType.findMany.mockResolvedValue(prefTypes);
+    const result = await service.handlePrefs(prefs, 1);
+    const expectedResult = [
+      'Preference wrong has type boolean but you provided string.',
+    ];
+    expect(result).toEqual(expectedResult);
+  });
+
+  it('should add prefType', async () => {
+    const prefType = {
+      prefName: 'test',
+      dataType: 'string',
+    };
+
+    prismaMock.prefType.create.mockResolvedValue({
+      id: 1,
+      prefName: prefType.prefName,
+      dataType: prefType.dataType,
+    });
+    const result = await service.addPrefType(prefType);
+    expect(result).toEqual({
+      id: 1,
+      prefName: prefType.prefName,
+      dataType: prefType.dataType,
+    });
+  });
+
+  it('should fail adding prefType with existing name', async () => {
+    const prefType = {
+      prefName: 'test',
+      dataType: 'string',
+    };
+
+    prismaMock.prefType.findFirst.mockResolvedValue({
+      id: 1,
+      prefName: prefType.prefName,
+      dataType: prefType.dataType,
+    });
+
+    await expect(
+      async () => await service.addPrefType(prefType),
+    ).rejects.toThrow(
+      `Preference type with name ${prefType.prefName} already exists.`,
+    );
+  });
+
+  it('should fail adding prefType with invalid type', async () => {
+    const prefType = {
+      prefName: 'test',
+      dataType: 'wrong',
+    };
+
+    prismaMock.prefType.findFirst.mockResolvedValue(null);
+    await expect(
+      async () => await service.addPrefType(prefType),
+    ).rejects.toThrow(
+      'Type wrong is not allowed. Allowed types are: string, number, boolean, enum',
     );
   });
 });

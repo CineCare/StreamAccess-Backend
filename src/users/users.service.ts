@@ -144,7 +144,7 @@ export class UsersService {
     };
   }
 
-  private async castUserPrefs(newUser: UserEntity) {
+  async castUserPrefs(newUser: UserEntity) {
     const prefTypes = await this.prisma.prefType.findMany({
       where: {
         prefName: { in: newUser.prefs.map((pref) => pref.name) },
