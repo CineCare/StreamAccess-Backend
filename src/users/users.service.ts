@@ -112,25 +112,7 @@ export class UsersService {
     }
     if (data.avatar !== undefined) {
       // remove old avatar
-      const user = await this.prisma.user.findUnique({
-        where: { id },
-        select: { avatar: true },
-      });
-      if (user.avatar) {
-        const avatarPath = path.join(
-          __dirname,
-          '../../assets/user_avatars',
-          user.avatar,
-        );
-        fs.unlink(avatarPath, (err) => {
-          if (err) {
-            // eslint-disable-next-line no-console
-            console.error('Error deleting avatar file:', err);
-            throw new BadRequestException('Failed to delete avatar file');
-          }
-        });
-      }
-      newData.avatar = data.avatar;
+      await this.manageAvatar(id, newData, data);
     }
     let prefErrors = [];
     if (data.prefs) {
@@ -167,6 +149,32 @@ export class UsersService {
       prefs: mappedUser.prefs,
       errors: prefErrors.length > 0 ? prefErrors : undefined,
     };
+  }
+
+  private async manageAvatar(
+    id: number,
+    newData: UpdateUserEntity,
+    data: UpdateUserDTO,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: { avatar: true },
+    });
+    if (user.avatar) {
+      const avatarPath = path.join(
+        __dirname,
+        '../../assets/user_avatars',
+        user.avatar,
+      );
+      fs.unlink(avatarPath, (err) => {
+        if (err) {
+          // eslint-disable-next-line no-console
+          console.error('Error deleting avatar file:', err);
+          throw new BadRequestException('Failed to delete avatar file');
+        }
+      });
+    }
+    newData.avatar = data.avatar;
   }
 
   async castUserPrefs(newUser: UserEntity) {
