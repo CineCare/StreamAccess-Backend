@@ -5,7 +5,7 @@ import { castNumParam } from './castNumParam';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const sanitize = require('sanitize-filename');
 
-export const editFileName = async (req, file, callback) => {
+export const editMovieFileName = async (req, file, callback) => {
   let movieTitle = '';
 
   if (req.route.stack[0].method === 'put' && !req.body.title) {
@@ -27,6 +27,16 @@ export const editFileName = async (req, file, callback) => {
   }
 
   const name = sanitize(movieTitle.replaceAll(' ', '_'));
+  const fileExtName = extname(file.originalname);
+  callback(null, `${name}${fileExtName}`);
+};
+
+export const editAvatarFileName = (req, file, callback) => {
+  const name = sanitize(
+    file.originalname
+      .replaceAll(' ', '_')
+      .substring(0, file.originalname.lastIndexOf('.')),
+  );
   const fileExtName = extname(file.originalname);
   callback(null, `${name}${fileExtName}`);
 };

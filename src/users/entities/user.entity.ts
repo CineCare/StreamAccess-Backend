@@ -9,6 +9,9 @@ export class UserEntity {
   pseudo: string;
 
   @ApiProperty()
+  avatar?: string;
+
+  @ApiProperty()
   email?: string;
 
   @ApiProperty()

@@ -40,6 +40,7 @@ describe('UsersService', () => {
       {
         id: 1,
         pseudo: 'test1',
+        avatar: null,
         email: 'test.codevert.org',
         password: 'secret',
         isActive: true,
@@ -59,6 +60,7 @@ describe('UsersService', () => {
     const user = {
       id: 1,
       pseudo: 'test1',
+      avatar: null,
       email: 'test.codevert.org',
       password: 'secret',
       isActive: true,
@@ -77,6 +79,7 @@ describe('UsersService', () => {
     const user = {
       id: 1,
       pseudo: 'test1',
+      avatar: null,
       email: 'test.codevert.org',
       password: 'secret',
       isActive: true,
@@ -134,6 +137,7 @@ describe('UsersService', () => {
       {
         id: 2,
         pseudo: 'testcandidate',
+        avatar: null,
         email: 'test.codevert.org',
         password: 'secret',
         isActive: false,
@@ -158,6 +162,7 @@ describe('UsersService', () => {
     const user = {
       id: data.id,
       pseudo: 'before_test',
+      avatar: null,
       password: 'hash',
       email: 'admin@codevert.org',
       isActive: true,
@@ -173,6 +178,7 @@ describe('UsersService', () => {
     const mappedUser = {
       id: data.id,
       pseudo: data.pseudo,
+      avatar: null,
       email: user.email,
       prefs: undefined,
       errors: undefined,
@@ -211,6 +217,7 @@ describe('UsersService', () => {
     const user = {
       id: data.id,
       pseudo: 'before_test',
+      avatar: null,
       password: hash,
       email: 'admin@codevert.org',
       isActive: true,
@@ -269,6 +276,7 @@ describe('UsersService', () => {
     const mappedUser = {
       id: data.id,
       pseudo: data.pseudo,
+      avatar: null,
       email: user.email,
       prefs: {
         test: {
@@ -307,6 +315,7 @@ describe('UsersService', () => {
     prismaMock.user.findUnique.mockResolvedValue({
       id: data.id,
       pseudo: 'test',
+      avatar: null,
       password: 'fake',
       email: 'admin@codevert.org',
       isActive: true,
@@ -331,6 +340,7 @@ describe('UsersService', () => {
     prismaMock.user.findUnique.mockResolvedValue({
       id: data.id,
       pseudo: 'test',
+      avatar: null,
       password: hash,
       email: 'admin@codevert.org',
       isActive: true,
@@ -359,6 +369,7 @@ describe('UsersService', () => {
     prismaMock.user.findUnique.mockResolvedValue({
       id: data.id,
       pseudo: 'test',
+      avatar: null,
       password: hash,
       email: 'admin@codevert.org',
       isActive: true,
@@ -544,5 +555,41 @@ describe('UsersService', () => {
     ).rejects.toThrow(
       'Type wrong is not allowed. Allowed types are: string, number, boolean, enum',
     );
+  });
+
+  it('should update user with new avatar', async () => {
+    const data = {
+      avatar: 'newAvatar.png',
+    };
+
+    const user = {
+      id: 1,
+      pseudo: 'userPseudo',
+      avatar: 'oldAvatar.png',
+      password: 'hashedPassword',
+      email: 'user@example.com',
+      isActive: true,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+    };
+
+    const updatedUser = {
+      ...user,
+      avatar: data.avatar,
+    };
+
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    prismaMock.user.update.mockResolvedValue(updatedUser);
+
+    const result = await service.updateMe(1, data);
+
+    expect(result).toEqual({
+      id: updatedUser.id,
+      pseudo: updatedUser.pseudo,
+      avatar: updatedUser.avatar,
+      email: updatedUser.email,
+      prefs: undefined,
+      errors: undefined,
+    });
   });
 });

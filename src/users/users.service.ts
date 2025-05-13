@@ -11,6 +11,8 @@ import { UpdateUserEntity } from './entities/updateUser.entity';
 import { handleErrorResponse } from '../commons/utils/handleErrorResponse';
 import * as prefHandler from '../commons/utils/prefsHandler';
 import { MappedUserDTO } from './DTO/userMapped.dto';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -108,6 +110,28 @@ export class UsersService {
     if (data.pseudo) {
       newData.pseudo = data.pseudo;
     }
+    if (data.avatar !== undefined) {
+      // remove old avatar
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+        select: { avatar: true },
+      });
+      if (user.avatar) {
+        const avatarPath = path.join(
+          __dirname,
+          '../../assets/user_avatars',
+          user.avatar,
+        );
+        fs.unlink(avatarPath, (err) => {
+          if (err) {
+            // eslint-disable-next-line no-console
+            console.error('Error deleting avatar file:', err);
+            throw new BadRequestException('Failed to delete avatar file');
+          }
+        });
+      }
+      newData.avatar = data.avatar;
+    }
     let prefErrors = [];
     if (data.prefs) {
       prefErrors = await this.handlePrefs(data.prefs, id);
@@ -138,6 +162,7 @@ export class UsersService {
     return {
       id: mappedUser.id,
       pseudo: mappedUser.pseudo,
+      avatar: mappedUser.avatar,
       email: mappedUser.email,
       prefs: mappedUser.prefs,
       errors: prefErrors.length > 0 ? prefErrors : undefined,

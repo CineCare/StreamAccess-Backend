@@ -72,6 +72,7 @@ describe('AuthService', () => {
     const mockUser = {
       id: 1,
       pseudo: 'testlogin',
+      avatar: null,
       email: 'testlogin@gmail.com',
       password: await bcrypt.hash('1234', 10), // Hachez le mot de passe
       isActive: true,
@@ -95,6 +96,7 @@ describe('AuthService', () => {
     const mockUser = {
       id: 1,
       pseudo: 'testlogin',
+      avatar: null,
       email: 'testlogin@gmail.com',
       password: '1234',
       isActive: true,
@@ -134,6 +136,7 @@ describe('AuthService', () => {
     jest.spyOn(prisma.user, 'create').mockResolvedValue({
       id: 1,
       pseudo: data.pseudo,
+      avatar: null,
       email: data.email,
       password: 'kjl',
       isActive: false,
@@ -158,6 +161,7 @@ describe('AuthService', () => {
     const mockUser = {
       id: 1,
       pseudo: 'testlogin',
+      avatar: null,
       email: 'testlogin@gmail.com',
       password: 'Codevert_1234',
       isActive: true,
@@ -179,6 +183,7 @@ describe('AuthService', () => {
     const mockUser = {
       id: 1,
       pseudo: 'testlogin',
+      avatar: null,
       email: 'testlogin@gmail.com',
       password: 'Codevert_1234',
       isActive: false,
@@ -200,6 +205,7 @@ describe('AuthService', () => {
     const mockUser = {
       id: 1,
       pseudo: 'testlogin',
+      avatar: null,
       email: 'testlogin@gmail.com',
       password: 'Codevert_1234',
       isActive: false,

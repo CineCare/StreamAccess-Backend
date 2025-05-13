@@ -18,7 +18,7 @@ import { CreateMovieDTO, UpdateMovieDTO } from './DTO/movie.dto';
 import { MoviesService } from './movies.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { editFileName } from '../commons/utils/fileUpload';
+import { editMovieFileName } from '../commons/utils/fileUpload';
 import { CreateMovieTagDTO } from './DTO/movieTagCreate.dto';
 import { CreateProducerDTO } from './DTO/producerCreate.dto';
 import { CreateDirectorDTO } from './DTO/directorCreate.dto';
@@ -99,7 +99,7 @@ export class MoviesController {
       },
       storage: diskStorage({
         destination: './assets/movies_images',
-        filename: editFileName,
+        filename: editMovieFileName,
       }),
     }),
   )
@@ -119,7 +119,7 @@ export class MoviesController {
     FileInterceptor('image', {
       storage: diskStorage({
         destination: './assets/movies_images',
-        filename: editFileName,
+        filename: editMovieFileName,
       }),
     }),
   )

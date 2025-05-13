@@ -39,3 +39,4 @@ lerna-debug.log*
 _envs
 eslint.xml
 test-results.xml
+/assets

@@ -8,6 +8,8 @@ import { UpdateMovieEntity } from './entities/movieUpdate.entity';
 import { castNumParam } from '../commons/utils/castNumParam';
 import { CreateMovieEntity } from './entities/movieCreate.entity';
 import { CreateDirectorDTO } from './DTO/directorCreate.dto';
+import path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class MoviesService {
@@ -65,6 +67,24 @@ export class MoviesService {
         ? castNumParam('directorId', body.directorId)
         : undefined,
     };
+    if (body.image) {
+      // Supprimer l'ancienne image si elle existe
+      const oldMovie = await this.prisma.movie.findUnique({ where: { id } });
+      if (oldMovie && oldMovie.image) {
+        const oldImagePath = path.join(
+          __dirname,
+          '../../assets/movies_images',
+          oldMovie.image,
+        );
+        try {
+          fs.unlinkSync(oldImagePath);
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.error('Error deleting old image:', err);
+        }
+      }
+      entity.image = body.image;
+    }
     try {
       return await this.prisma.movie.update({ where: { id }, data: entity });
     } catch (e) {

@@ -9,6 +9,9 @@ import {
   Request,
   Body,
   Post,
+  UseInterceptors,
+  UploadedFile,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -29,6 +32,11 @@ import { bodyValidationPipe } from '../commons/validationPipes/bodyValidation.pi
 import { ParseQueryIdPipe } from '../commons/validationPipes/parseQueryId.pipe';
 import { PrefTypeDTO } from '../commons/utils/prefsHandler';
 import { PrefType } from '@prisma/client';
+import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors';
+import { diskStorage } from 'multer';
+import { editAvatarFileName } from '../commons/utils/fileUpload';
+import * as path from 'path';
+import * as fs from 'fs';
 
 const userValidationPipe = new ParseQueryIdPipe('user');
 
@@ -69,11 +77,57 @@ export class UsersController {
   @Put('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      limits: {
+        fileSize: 8000000, // Compliant: 8MB
+      },
+      storage: diskStorage({
+        destination: './assets/user_avatars',
+        filename: editAvatarFileName,
+      }),
+    }),
+  )
   async updateMe(
     @Request() req,
     @Body(bodyValidationPipe) body: UpdateUserDTO,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<MappedUserDTO> {
+    body.avatar = file ? file.filename : undefined;
     return await this.usersService.updateMe(req.user.id, body);
+  }
+
+  @Delete('me/avatar')
+  @ApiOkResponse({ description: 'Avatar removed successfully' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async deleteAvatar(@Request() req): Promise<{ message: string }> {
+    const userId = req.user.id;
+
+    // Récupérer l'utilisateur pour obtenir le chemin de l'avatar
+    const user = await this.usersService.getOne(userId, { avatar: true });
+
+    if (user.avatar) {
+      const avatarPath = path.join(
+        __dirname,
+        '../../assets/user_avatars',
+        user.avatar,
+      );
+
+      // Supprimer le fichier du système de fichiers
+      fs.unlink(avatarPath, (err) => {
+        if (err) {
+          // eslint-disable-next-line no-console
+          console.error('Error deleting avatar file:', err);
+          throw new BadRequestException('Failed to delete avatar file');
+        }
+      });
+
+      // Mettre à jour la base de données pour vider la propriété avatar
+      await this.usersService.updateMe(userId, { avatar: null });
+    }
+
+    return { message: 'Avatar removed successfully' };
   }
 
   @Get(':id')
