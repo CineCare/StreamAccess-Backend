@@ -6,4 +6,9 @@ export class CreateMovieTagDTO {
   @IsString()
   @IsNotEmpty()
   label: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  icon: string;
 }
