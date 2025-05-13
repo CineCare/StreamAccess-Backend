@@ -8,7 +8,7 @@ import { UpdateMovieEntity } from './entities/movieUpdate.entity';
 import { castNumParam } from '../commons/utils/castNumParam';
 import { CreateMovieEntity } from './entities/movieCreate.entity';
 import { CreateDirectorDTO } from './DTO/directorCreate.dto';
-import path from 'path';
+import * as path from 'path';
 import * as fs from 'fs';
 
 @Injectable()

@@ -25,6 +25,8 @@ import { CreateDirectorDTO } from './DTO/directorCreate.dto';
 import { ParseQueryIdPipe } from '../commons/validationPipes/parseQueryId.pipe';
 import { bodyValidationPipe } from '../commons/validationPipes/bodyValidation.pipe';
 import { idListValidationPipe } from '../commons/validationPipes/IdListValidation.pipe';
+import * as path from 'path';
+import * as fs from 'fs';
 
 const movieIdValidationPipe = new ParseQueryIdPipe('Movie');
 const tagIdValidationPipe = new ParseQueryIdPipe('Tag');
@@ -130,6 +132,35 @@ export class MoviesController {
   ) {
     body.image = file ? file.filename : undefined;
     return this.moviesService.update(id, body);
+  }
+
+  @Delete(':id/image')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  @HttpCode(204)
+  async deleteImage(@Param('id', movieIdValidationPipe) id: number) {
+    const movie = await this.moviesService.getOne(id);
+    if (movie.image) {
+      const oldImagePath = path.join(
+        __dirname,
+        '../../assets/movies_images',
+        movie.image,
+      );
+      try {
+        fs.unlinkSync(oldImagePath);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      }
+      try {
+        await this.moviesService.update(id, { image: null });
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+        throw new Error('Failed to delete image');
+      }
+    }
   }
 
   @Delete(':id')
