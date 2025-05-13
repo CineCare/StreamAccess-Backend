@@ -81,31 +81,7 @@ export class UsersService {
   ): Promise<MappedUserDTO & { errors: string[] }> {
     const newData: UpdateUserEntity = {};
     if (data.actualPassword) {
-      const user = await this.prisma.user.findUnique({
-        where: { id },
-        select: { password: true },
-      });
-      if (!user) {
-        throw new NotFoundException('user not found');
-      }
-      const compare = await bcrypt.compare(data.actualPassword, user.password);
-      if (!compare) {
-        throw new BadRequestException('Le mot de passe actuel est invalide');
-      }
-      if (!data.newPassword || !data.newPasswordConfirm) {
-        throw new BadRequestException(
-          'Pour changer de mot de passe, vous devez renseigner le nouveau mot de passe et le confirmer',
-        );
-      }
-      if (data.newPassword !== data.newPasswordConfirm) {
-        throw new BadRequestException(
-          'Le nouveau mot de passe et la confirmation sont différents',
-        );
-      }
-      newData.password = await bcrypt.hash(
-        data.newPassword,
-        parseInt(process.env.ROUNDS_OF_HASHING),
-      );
+      await this.managePassowordChange(id, data, newData);
     }
     if (data.pseudo) {
       newData.pseudo = data.pseudo;
@@ -149,6 +125,38 @@ export class UsersService {
       prefs: mappedUser.prefs,
       errors: prefErrors.length > 0 ? prefErrors : undefined,
     };
+  }
+
+  private async managePassowordChange(
+    id: number,
+    data: UpdateUserDTO,
+    newData: UpdateUserEntity,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: { password: true },
+    });
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+    const compare = await bcrypt.compare(data.actualPassword, user.password);
+    if (!compare) {
+      throw new BadRequestException('Le mot de passe actuel est invalide');
+    }
+    if (!data.newPassword || !data.newPasswordConfirm) {
+      throw new BadRequestException(
+        'Pour changer de mot de passe, vous devez renseigner le nouveau mot de passe et le confirmer',
+      );
+    }
+    if (data.newPassword !== data.newPasswordConfirm) {
+      throw new BadRequestException(
+        'Le nouveau mot de passe et la confirmation sont différents',
+      );
+    }
+    newData.password = await bcrypt.hash(
+      data.newPassword,
+      parseInt(process.env.ROUNDS_OF_HASHING),
+    );
   }
 
   private async manageAvatar(
