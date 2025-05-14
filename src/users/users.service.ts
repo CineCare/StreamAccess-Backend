@@ -93,7 +93,10 @@ export class UsersService {
     }
     let prefErrors = [];
     if (data.prefs) {
-      prefErrors = await this.handlePrefs(data.prefs, id);
+      prefErrors = await this.handlePrefs(
+        data.prefs as prefHandler.PrefDTO[],
+        id,
+      );
     }
     const newUser = (await this.prisma.user.update({
       where: { id },

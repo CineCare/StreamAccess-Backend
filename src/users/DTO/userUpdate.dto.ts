@@ -25,5 +25,5 @@ export class UpdateUserDTO {
 
   @IsNotEmpty()
   @ApiProperty()
-  prefs?: PrefDTO[];
+  prefs?: PrefDTO[] | string;
 }

@@ -94,6 +94,9 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<MappedUserDTO> {
     body.avatar = file ? file.filename : undefined;
+    if (body.prefs && typeof body.prefs === 'string') {
+      body.prefs = JSON.parse(body.prefs);
+    }
     return await this.usersService.updateMe(req.user.id, body);
   }
 
