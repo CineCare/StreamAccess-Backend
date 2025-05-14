@@ -97,7 +97,7 @@ describe('MoviesService', () => {
     expect(result).toEqual(movies.map((cinema) => {
       return {
         ...cinema,
-        tags: cinema.tags.map((movieTag) => movieTag.tag.label),
+        tags: cinema.tags.map((movieTag) => movieTag.tag.id),
       };
     }));
   });
@@ -114,7 +114,7 @@ describe('MoviesService', () => {
       longSynopsis: null,
       teamComment: null,
       history: null,
-      
+      tags: [],
     };
 
     prismaMock.movie.findUniqueOrThrow.mockResolvedValueOnce(movie);
@@ -122,6 +122,7 @@ describe('MoviesService', () => {
     const result = await service.getOne(1);
     expect(prismaMock.movie.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { id: 1 },
+      include: { tags: { select: { tag: { select: { id: true } } } } },
     });
     expect(result).toEqual(movie);
   });
