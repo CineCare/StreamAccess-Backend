@@ -186,6 +186,17 @@ export class MoviesController {
     return this.moviesService.createTag(body);
   }
 
+  @Put('tag/:id')
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @UseGuards(AdminAuthGuard)
+  updateTag(
+    @Param('id', tagIdValidationPipe) id: number,
+    @Body(bodyValidationPipe) body: CreateMovieTagDTO,
+  ) {
+    return this.moviesService.updateTag(id, body);
+  }
+
   @Delete('tag/:id')
   @ApiOkResponse()
   @ApiBearerAuth()

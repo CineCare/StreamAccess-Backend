@@ -122,6 +122,14 @@ export class MoviesService {
     return await this.prisma.movieTag.create({ data: body });
   }
 
+  async updateTag(id: number, body: CreateMovieTagDTO) {
+    try {
+      return await this.prisma.movieTag.update({ where: { id }, data: body });
+    } catch (e) {
+      handleErrorResponse(e, 'tag', id.toString());
+    }
+  }
+
   async deleteTag(id: number) {
     try {
       return await this.prisma.movieTag.delete({ where: { id } });
