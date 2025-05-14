@@ -17,20 +17,27 @@ export class MoviesService {
 
   async getList() {
     const response = await this.prisma.movie.findMany({
-      include: { tags: { select: { tag: { select: { label: true } } } } },
+      include: { tags: { select: { tag: { select: { id: true } } } } },
     });
 
     return response.map((cinema) => {
       return {
         ...cinema,
-        tags: cinema.tags.map((movieTag) => movieTag.tag.label),
+        tags: cinema.tags.map((movieTag) => movieTag.tag.id),
       };
     });
   }
 
   async getOne(id: number) {
     try {
-      return await this.prisma.movie.findUniqueOrThrow({ where: { id } });
+      const movie = await this.prisma.movie.findUniqueOrThrow({
+        where: { id },
+        include: { tags: { select: { tag: { select: { id: true } } } } },
+      });
+      return {
+        ...movie,
+        tags: movie.tags.map((movieTag) => movieTag.tag.id),
+      };
     } catch (e) {
       handleErrorResponse(e, 'movieId', id.toString());
     }
