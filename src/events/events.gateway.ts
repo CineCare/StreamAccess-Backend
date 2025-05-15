@@ -3,7 +3,6 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
@@ -46,7 +45,7 @@ export class EventsGateway {
     try {
       token = client.handshake.headers.authorization.split(' ')[1];
     } catch {
-      client.emit('message', {
+      client.emit('error', {
         error: 'Unauthorized',
         message: 'no token provided',
       });
@@ -54,23 +53,21 @@ export class EventsGateway {
     }
     try {
       new JwtService().verify(token, { secret: jwtSecret });
+      const decodedToken = new JwtService().decode(token);
+      const user = await this.usersService.getOne(decodedToken?.['userId']);
+      client['user'] = user;
+      this.logger.log(`User connected : ${user.pseudo}`);
+
+      client.emit('welcome', `welcome ${user.pseudo}`);
+      client.broadcast.emit('message', `New user connected : ${user.pseudo}`);
     } catch {
-      client.emit('message', {
+      client.emit('error', {
         error: 'Unauthorized',
         message: 'Invalid or expired token',
+        code: 401,
       });
       client.disconnect();
     }
-    const decodedToken = new JwtService().decode(token);
-    const user = await this.usersService.getOne(decodedToken?.['userId']);
-    client['user'] = user;
-    if (!user) {
-      throw new WsException('Unauthorized');
-    } else {
-      this.logger.log(`User connected : ${user.pseudo}`);
-    }
-    client.emit('welcome', `welcome ${user.pseudo}`);
-    client.broadcast.emit('message', `New user connected : ${user.pseudo}`);
   }
 
   handleDisconnect(client) {
