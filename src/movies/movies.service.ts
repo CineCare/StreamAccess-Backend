@@ -101,6 +101,24 @@ export class MoviesService {
 
   async delete(id: number) {
     try {
+      // Supprimer l'image associée au film
+      const movie = await this.prisma.movie.findUnique({
+        where: { id },
+        select: { image: true },
+      });
+      if (movie && movie.image) {
+        const imagePath = path.join(
+          __dirname,
+          '../../assets/movies_images',
+          movie.image,
+        );
+        try {
+          fs.unlinkSync(imagePath);
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.error('Error deleting image:', err);
+        }
+      }
       return await this.prisma.movie.delete({ where: { id } });
     } catch (e) {
       handleErrorResponse(e, 'movieId', id.toString());
