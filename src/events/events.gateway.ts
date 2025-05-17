@@ -22,16 +22,41 @@ export class EventsGateway {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('EventsGateway');
 
+  private messageTypes = ['movies', 'users', 'team'];
+  private messageContents = {
+    movies: [
+      'Un nouveau film correspondant à vos préférences a été ajouté : Happiness therapy.',
+      'Un nouveau film accessible a été ajouté : Intouchable.',
+      'Quelqu\'un a laissé un commentaire sur la vidéo "La ligne verte" où vous avez aussi commenté.',
+    ],
+    users: [
+      'lokko vient de se connecter',
+      'Whitedog44 vient de se déconnecter',
+      'Un nouvel utilisateur a rejoint StreamAccess : JohnDoe',
+    ],
+    team: [
+      'Le thème par défaut a été mis à jour',
+      'Opération de maintenance prévue ce soir à 23h, le site sera temporairement indisponible',
+    ],
+  };
+
   sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async randomMessage() {
     let delay = 0;
+    let messageType;
+    let messageContent;
     while (true) {
       delay = Math.floor(Math.random() * 20000);
       await this.sleep(delay);
-      this.server.emit('message', 'random message');
+      messageType = this.messageTypes[Math.floor(Math.random() * 3)];
+      messageContent =
+        this.messageContents[messageType][
+          Math.floor(Math.random() * this.messageContents[messageType].length)
+        ];
+      this.server.emit(messageType, messageContent);
     }
   }
 
