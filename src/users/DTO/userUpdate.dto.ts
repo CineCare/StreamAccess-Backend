@@ -24,6 +24,10 @@ export class UpdateUserDTO {
   newPasswordConfirm?: string;
 
   @IsNotEmpty()
-  @ApiProperty()
-  prefs?: PrefDTO[] | string;
+  @ApiProperty({
+    description: 'preferences to update, as a stringified PrefDTO array',
+    example: '[{"name":"theme","value":"default","profileName":"default"}]',
+    type: 'string',
+  })
+  prefs?: PrefDTO[];
 }
