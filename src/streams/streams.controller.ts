@@ -30,7 +30,18 @@ export class StreamsController {
     if (videoRange) {
       const parts = videoRange.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
+      let end = parts[1] ? parseInt(parts[1], 10) : size - 1;
+      let status = HttpStatus.PARTIAL_CONTENT;
+      // what if end is greater than size?
+      if (start >= size || start > end) {
+        throw new BadRequestException(
+          'Requested range not satisfiable. Start is greater than size or end is less than start.',
+        );
+      }
+      if (end >= size) {
+        end = size - 1; // Adjust end to the last byte of the file
+        status = HttpStatus.OK;
+      }
       const chunkSize = end - start + 1;
       const readStreamfile = createReadStream(videoPath, {
         start,
@@ -41,7 +52,7 @@ export class StreamsController {
         'Content-Range': `bytes ${start}-${end}/${size}`,
         'Content-Length': chunkSize,
       };
-      res.writeHead(HttpStatus.PARTIAL_CONTENT, head); //206
+      res.writeHead(status, head); //206
       //readStreamfile.pipe(res);
       return new StreamableFile(readStreamfile);
     } else {
