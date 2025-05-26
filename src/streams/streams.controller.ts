@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Logger,
   Res,
+  StreamableFile,
 } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { createReadStream, statSync } from 'fs';
@@ -41,13 +42,15 @@ export class StreamsController {
         'Content-Length': chunkSize,
       };
       res.writeHead(HttpStatus.PARTIAL_CONTENT, head); //206
-      readStreamfile.pipe(res);
+      //readStreamfile.pipe(res);
+      return new StreamableFile(readStreamfile);
     } else {
       const head = {
         'Content-Length': size,
       };
       res.writeHead(HttpStatus.OK, head); //200
-      createReadStream(videoPath).pipe(res);
+      //createReadStream(videoPath).pipe(res);
+      return new StreamableFile(createReadStream(videoPath));
     }
   }
 }
