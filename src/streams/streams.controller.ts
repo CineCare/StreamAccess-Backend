@@ -22,7 +22,7 @@ export class StreamsController {
   @Get()
   @Header('Accept-Ranges', 'bytes')
   @Header('Content-Type', 'video/mp4')
-  getStream(@Headers() headers, @Res() res: Response) {
+  getStream(@Headers() headers, @Res({ passthrough: true }) res: Response) {
     this.logger.log('stream begins');
     const videoPath = `${process.env.ASSETS_PATH}/movies_streams/Freaks_La_Monstrueuse_Parade_1932_VOSTFR.mp4`;
     const { size } = statSync(videoPath);
