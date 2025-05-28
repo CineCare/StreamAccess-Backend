@@ -53,14 +53,12 @@ export class StreamsController {
         'Content-Length': chunkSize,
       };
       res.writeHead(status, head); //206
-      //readStreamfile.pipe(res);
       return new StreamableFile(readStreamfile);
     } else {
       const head = {
         'Content-Length': size,
       };
       res.writeHead(HttpStatus.OK, head); //200
-      //createReadStream(videoPath).pipe(res);
       return new StreamableFile(createReadStream(videoPath));
     }
   }
