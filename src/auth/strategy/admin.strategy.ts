@@ -20,6 +20,7 @@ export class AdminStrategy extends PassportStrategy(Strategy, 'admin') {
       'mr.tirmoatsu@gmail.com',
       'lokkotarakun@gmail.com',
       'christ6565@free.fr',
+      'cinecare6@gmail.com',
     ];
     const user = await this.userService.getOne(payload.userId, { email: true });
     if (!user || !adminList.includes(user.email)) {
