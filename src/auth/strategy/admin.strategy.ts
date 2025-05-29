@@ -15,7 +15,7 @@ export class AdminStrategy extends PassportStrategy(Strategy, 'admin') {
   }
 
   async validate(payload: { userId: number }) {
-    const adminList = process.env.ADMIN_EMAIL.split(';');
+    const adminList = process.env.ADMIN_EMAILS.split(';');
     const user = await this.userService.getOne(payload.userId, { email: true });
     if (!user || !adminList.includes(user.email)) {
       throw new UnauthorizedException();
