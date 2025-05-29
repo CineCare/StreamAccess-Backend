@@ -82,7 +82,7 @@ export class UsersService {
   ): Promise<MappedUserDTO & { errors: string[] }> {
     const newData: UpdateUserEntity = {};
     if (data.actualPassword) {
-      await this.managePassowordChange(id, data, newData);
+      await this.managePasswordChange(id, data, newData);
     }
     if (data.pseudo) {
       newData.pseudo = data.pseudo;
@@ -128,7 +128,7 @@ export class UsersService {
     };
   }
 
-  private async managePassowordChange(
+  private async managePasswordChange(
     id: number,
     data: UpdateUserDTO,
     newData: UpdateUserEntity,
