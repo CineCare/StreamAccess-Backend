@@ -21,6 +21,9 @@ export function handleErrorResponse(
       `Wrong value for ${e.meta.field_name.substring(0, e.meta.field_name.length - 2)}`,
     );
   }
+  if (e.code === 'P2000') {
+    throw new BadRequestException(`Value for ${e.meta.field_name} is too long`);
+  }
   if (e instanceof BadRequestException || e instanceof UnauthorizedException) {
     throw e;
   }
