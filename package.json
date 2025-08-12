@@ -17,7 +17,7 @@
     "lint_fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "ci_lint": "eslint \"{src,apps,libs,test}/**/*.ts\" -f checkstyle -o eslint.xml",
     "test": "jest",
-    "ci_tests": "jest --setupFilesAfterEnv .env --outputFile=\"test-results.xml\"",
+    "ci_tests": "jest --setupFilesAfterEnv ../.env --outputFile=\"test-results.xml\"",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
