@@ -7,7 +7,7 @@ export class MailService {
 
   async sendRegistrationRequest(userName: string, email: string) {
     await this.mailerService.sendMail({
-      to: process.env.ADMIN_EMAIL,
+      to: process.env.ADMIN_EMAILS.split(';').join(','),
       subject: "Demande d'inscription StreamAccess",
       template: './registerRequest',
       context: {
