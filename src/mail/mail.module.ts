@@ -13,8 +13,8 @@ import { join } from 'path';
         host: 'mail.codevert.org',
         secure: false,
         auth: {
-          user: 'cinecare@codevert.org',
-          pass: 'Whitedog_hos44',
+          user: process.env.MAILSERVICE_USER,
+          pass: process.env.MAILSERVICE_PASSWORD,
         },
       },
       defaults: {
