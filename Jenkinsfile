@@ -54,11 +54,12 @@ pipeline {
         }
 
         stage('test') {
-            //copy .env file from jenkins credentials to current workspace
-            withCredentials([file(credentialsId: "${ENV_ID}", variable: 'envFile')]){
-                sh 'cp $envFile $WORKSPACE'
-            }
+            
             steps {
+                //copy .env file from jenkins credentials to current workspace
+                withCredentials([file(credentialsId: "${ENV_ID}", variable: 'envFile')]){
+                    sh 'cp $envFile $WORKSPACE'
+                }
                 echo 'performing test...'
                 sh '''
                     npm run ci_tests
