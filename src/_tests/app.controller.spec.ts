@@ -16,7 +16,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "Welcome to StreamAccess"', () => {
-      expect(appController.getHello()).toBe('Welcome to StreamAccess');
+      expect(appController.getHello()).toBe('Welcome to StreamAccess backend');
     });
   });
 });
