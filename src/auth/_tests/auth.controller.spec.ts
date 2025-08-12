@@ -5,7 +5,6 @@ import { PassportModule } from '@nestjs/passport';
 import { MailModule } from '../../mail/mail.module';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { UsersModule } from '../../users/users.module';
-//import { jwtSecret } from '../auth.module';
 import { AuthService } from '../auth.service';
 import { AdminStrategy } from '../strategy/admin.strategy';
 import { JwtStrategy } from '../strategy/jwt.strategy';

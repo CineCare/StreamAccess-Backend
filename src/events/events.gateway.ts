@@ -6,7 +6,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
-//import { jwtSecret } from '../auth/auth.module';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
