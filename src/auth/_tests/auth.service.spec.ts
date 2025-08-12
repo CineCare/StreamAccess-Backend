@@ -5,7 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { MailModule } from '../../mail/mail.module';
 import { UsersModule } from '../../users/users.module';
 import { AuthController } from '../auth.controller';
-import { jwtSecret } from '../auth.module';
+//import { jwtSecret } from '../auth.module';
 import { AdminStrategy } from '../strategy/admin.strategy';
 import { prismaMock } from '../../_tests/prismaMock';
 import * as bcrypt from 'bcrypt';
@@ -24,7 +24,7 @@ describe('AuthService', () => {
       imports: [
         PassportModule,
         JwtModule.register({
-          secret: jwtSecret,
+          secret: process.env.JWT_SECRET,
           signOptions: { expiresIn: '1d' },
         }),
         UsersModule,
