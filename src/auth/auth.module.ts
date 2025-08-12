@@ -9,14 +9,14 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { AdminStrategy } from './strategy/admin.strategy';
 import { MailModule } from '../mail/mail.module';
 
-export const jwtSecret = 'super_secret_password';
+//export const jwtSecret = 'super_secret_password';
 
 @Module({
   imports: [
     PrismaModule,
     PassportModule,
     JwtModule.register({
-      secret: jwtSecret,
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
     UsersModule,
