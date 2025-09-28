@@ -8,6 +8,7 @@ export class MailService {
   async sendRegistrationRequest(userName: string, email: string) {
     await this.mailerService.sendMail({
       to: process.env.ADMIN_EMAILS.split(';').join(','),
+      cc: 'cinecare6@gmail.com',
       subject: "Demande d'inscription StreamAccess",
       template: './registerRequest',
       context: {
