@@ -9,6 +9,7 @@ import { MailModule } from './mail/mail.module';
 import { MoviesModule } from './movies/movies.module';
 import { StreamsModule } from './streams/streams.module';
 import { EventsModule } from './events/events.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EventsModule } from './events/events.module';
     }),
     StreamsModule,
     EventsModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -18,4 +18,13 @@ export class PrefEntity {
 
   @ApiProperty()
   helpLevel?: number;
+
+  @ApiProperty()
+  value: string;
+
+  @ApiProperty()
+  profileName: string;
+
+  @ApiProperty()
+  userId: number;
 }
